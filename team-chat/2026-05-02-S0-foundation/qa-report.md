@@ -249,3 +249,103 @@
 - Headless server limitations prevent full QA automation — human runtime pass required ⚠️
 - Recommend: Docker Compose QA runner with Playwright + Expo CLI for future sprints 🐳
 
+
+---
+
+## Actual Test Results (2026-05-02 20:51 UTC)
+
+### ✅ Executed Tests
+
+**Environment:**
+- Server: 164.90.178.19 (headless, no Docker, no X11)
+- Node: v22.22.0
+- pnpm: 9.12.0
+- supabase CLI: 2.95.4 (installed, Docker unavailable)
+
+**Test Run:**
+
+1. **pnpm-lock.yaml drift check**
+   - ❌ Backend branch: pnpm-lock.yaml MISSING
+   - ❌ Mobile branch: pnpm-lock.yaml MISSING
+   - ✅ Web branch: pnpm-lock.yaml EXISTS
+   - ⚠️ **Risk:** Mobile + backend branches will regenerate lockfile on `pnpm install` → drift
+   - **PM action:** First merge should be web (has lockfile), then mobile/backend regenerate
+
+2. **pnpm install (main branch)**
+   - ✅ PASS — all dependencies resolved
+   - Installed: prettier, turbo, typescript, vitest
+
+3. **pnpm typecheck (all packages)**
+   - ✅ PASS — @attendance/domain, @attendance/i18n, @attendance/ui
+   - 3/3 packages typecheck clean
+   - Duration: 2.376s
+
+4. **pnpm test (domain logic)**
+   - ✅ PASS — 32/32 tests
+   - Files: badge.test.ts, sla.test.ts, streak.test.ts, rotation.test.ts
+   - Duration: 920ms
+
+5. **pnpm build (apps/web — web branch)**
+   - ✅ PASS — Next.js 16.2.0 (Turbopack)
+   - TypeScript compilation: 4.2s
+   - Static pages: 4/4 generated
+   - Routes: /, /login, /team (all render)
+   - ✅ **.js trade-off empirically validated** — build succeeded without .js extension
+
+6. **supabase start + test db (backend branch)**
+   - ❌ BLOCKED — Docker daemon not running
+   - supabase CLI installed (2.95.4), but `supabase start` requires Docker
+   - **Deferred:** pgTAP execution to CI or dogfood with Docker environment
+
+---
+
+### 🟢 Deferred to Dogfood (Post-Faza A)
+
+**AC not tested (runtime verification required):**
+
+**Backend:**
+- [ ] Google OAuth end-to-end (real provider needed)
+- [ ] Realtime CDC (real Supabase project needed)
+- [ ] pgTAP RLS tests (Docker required for `supabase test db`)
+
+**Mobile:**
+- [ ] iOS simulator (macOS required)
+- [ ] Android emulator (Android Studio OR Expo Go + real device)
+- [ ] GPS auto-detect (device/simulator with location services)
+- [ ] Touch target verification (48pt on real device)
+- [ ] Fraunces font rendering (if fonts installed)
+
+**Web:**
+- [ ] Browser functional test (Chrome/Firefox with X11)
+- [ ] Mock session flow (`/login` → `/team`)
+- [ ] KPI strip render
+- [ ] Employee list render
+- [ ] STATUS_COLOR mapping visual verification
+- [ ] Tailwind v4 + shadcn/ui visual polish
+
+**End-to-end:**
+- [ ] Google login → mobile check-in → web realtime update (full pipeline)
+
+---
+
+### Decision: CONDITIONAL PASS → STRUCTURAL PASS
+
+**Updated verdict:**
+- ✅ **Structural quality:** typecheck, domain tests, web build — all PASS
+- ✅ **.js trade-off:** empirically validated (Next.js build succeeded)
+- ⚠️ **pnpm-lock.yaml drift:** web has lock, mobile/backend don't (merge order matters)
+- ⏳ **Runtime verification:** Deferred to dogfood session with Docker + devices
+
+**Recommendation:**
+1. **Merge order:** web → main first (has lockfile), then mobile, then backend
+2. **Dogfood session:** Ülvi + 1 employee + 1 manager with real devices/Docker
+3. **CI setup:** Add GitHub Actions with Docker for pgTAP + Playwright
+
+---
+
+**QA final notes:**
+- Structural tests all PASS ✅
+- Web build empirically validates .js trade-off ✅
+- pgTAP blocked by Docker (headless server constraint) ⚠️
+- Mobile/web runtime tests require devices/browser (deferred to dogfood) ⏳
+
