@@ -9,10 +9,10 @@
 
 import * as Location from 'expo-location'
 
-// HQ seed coords (Code Academy Baku). When tenant settings land,
-// read from `tenant_settings.hq_lat/lng/radius_m`.
-const HQ_LAT = 40.3777
-const HQ_LNG = 49.8920
+// HQ seed coords (placeholder confirmed 2026-05-02: 40.4093, 49.8671).
+// TODO: replace with actual HQ coords from tenant_settings when backend ready.
+const HQ_LAT = 40.4093
+const HQ_LNG = 49.8671
 const HQ_RADIUS_M = 80
 
 export type GeofenceResult =

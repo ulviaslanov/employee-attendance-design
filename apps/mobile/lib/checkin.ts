@@ -27,6 +27,7 @@ export function useCheckInMutation() {
       const { data, error } = await supabase.from('check_ins').insert({
         employee_id: input.employeeId,
         type: input.type,
+        checked_in_at: new Date().toISOString(),
         detection_method: input.detectionMethod,
         location_evidence: input.locationEvidence ?? null,
         note: input.note ?? null,

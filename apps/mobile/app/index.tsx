@@ -14,6 +14,7 @@ type DetectState =
   | { phase: 'denied' }
 
 const MANUAL_OPTIONS: ReadonlyArray<{ type: CheckInType; key: string }> = [
+  { type: 'office', key: 'checkin.statusOffice' },
   { type: 'remote', key: 'checkin.remoteFromHome' },
   { type: 'field', key: 'checkin.fromField' },
   { type: 'meeting', key: 'checkin.inMeeting' },
@@ -51,7 +52,7 @@ export default function MorningCheckIn() {
       detectionMethod: useGps ? 'gps' : 'manual',
       locationEvidence: evidence,
     })
-    router.replace('/checkin/success')
+    router.replace({ pathname: '/checkin/success', params: { type } })
   }
 
   return (
@@ -127,10 +128,11 @@ function InsideHqCard({
         accessibilityRole="button"
         disabled={disabled}
         onPress={onConfirm}
-        className="bg-ink rounded-md py-md px-md active:opacity-80"
+        className="bg-coral rounded-md py-md px-md active:opacity-80"
+        style={{ minHeight: 48 }}
       >
-        <Text className="text-white text-center font-semibold">
-          {t('checkin.confirmHere')}
+        <Text className="text-ink text-center font-semibold text-base">
+          {t('checkin.confirmOffice')}
         </Text>
       </Pressable>
       <Pressable accessibilityRole="button" onPress={onSwitchManual}>
