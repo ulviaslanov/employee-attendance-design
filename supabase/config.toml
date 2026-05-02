@@ -1,0 +1,57 @@
+# Supabase local config — Code Academy Attendance.
+# Production OAuth is configured in Supabase Dashboard; this file
+# mirrors the relevant parts for local dev (`supabase start`).
+
+project_id = "code-academy-attendance"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = [
+  "http://localhost:3000/auth/callback",
+  "http://localhost:8081",                # Expo dev (mobile)
+  "exp://127.0.0.1:8081/--/auth/callback" # Expo deep link (mobile)
+]
+jwt_expiry = 3600
+enable_signup = true
+# Email confirmations not used — pilot is OAuth-only.
+enable_confirmations = false
+
+[auth.email]
+enable_signup = false   # disable password signup; OAuth only
+enable_confirmations = false
+
+# Google OAuth — pilot allows only @code.az.
+# The DB-level trigger in 0003_auth_provision.sql enforces this as
+# defense-in-depth in case dashboard config drifts.
+[auth.external.google]
+enabled = true
+client_id = "env(GOOGLE_OAUTH_CLIENT_ID)"
+secret    = "env(GOOGLE_OAUTH_CLIENT_SECRET)"
+redirect_uri = "http://localhost:54321/auth/v1/callback"
+# Restrict OAuth consent to a single Google Workspace domain.
+# This adds &hd=code.az to the Google authorization URL.
+url = "https://accounts.google.com/o/oauth2/v2/auth?hd=code.az"
+
+[realtime]
+enabled = true
