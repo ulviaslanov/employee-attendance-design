@@ -1,0 +1,81 @@
+name: Feature request
+description: Yeni feature və ya screen
+labels: ["feature", "needs-pm"]
+body:
+  - type: input
+    id: spec_ref
+    attributes:
+      label: Spec referansı
+      description: PROJECT_SPECS.md hansı bölmə? (məs § 4.2 Check-out System)
+      placeholder: PROJECT_SPECS.md § 4.2
+    validations:
+      required: true
+
+  - type: input
+    id: screen_id
+    attributes:
+      label: Screen ID
+      description: PROJECT_SPECS.md § 5 Screen Inventory-dən (məs CI-1, MG-2)
+      placeholder: CI-1
+    validations:
+      required: false
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Məqsəd
+      description: 1 cümlə — nə əldə olunacaq, hansı user üçün
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Concrete, ölçüləbilən, sıra ilə
+      placeholder: |
+        1. Employee morning gate-də auto-detected location görür
+        2. Confirm tıklayanda check_ins-ə yazılır
+        3. Streak count update olur
+    validations:
+      required: true
+
+  - type: textarea
+    id: anti_goals
+    attributes:
+      label: Anti-goals
+      description: Bu task-da ETMİRSƏN
+      placeholder: Bu task SSID detection daxil etmir — v1.5
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Estimated scope
+      options:
+        - small (≤ 1 gün)
+        - medium (1-2 gün)
+        - large (> 2 gün — PM bölsün)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: dispatch
+    attributes:
+      label: Dispatch
+      description: Hansı agent-lər iştirak edir
+      options:
+        - label: designer
+        - label: backend-developer
+        - label: frontend-mobile
+        - label: frontend-web
+
+  - type: input
+    id: pilot_metric
+    attributes:
+      label: Pilot metric impact
+      description: Bu feature 80% check-in adoption-a necə təsir edir?
+      placeholder: Daha rahat morning gate → daha çox employee check-in edir
+    validations:
+      required: false

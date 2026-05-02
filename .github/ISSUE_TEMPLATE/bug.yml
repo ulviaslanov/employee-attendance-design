@@ -1,0 +1,88 @@
+name: Bug
+description: Bir şey gözlənilmədiyi kimi işləyir
+labels: ["bug", "needs-triage"]
+body:
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - critical (data loss, auth fail, app crash)
+        - major (feature broken, no workaround)
+        - minor (cosmetic, has workaround)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: env
+    attributes:
+      label: Environment
+      options:
+        - dev (lokal)
+        - staging
+        - prod
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - mobile iOS
+        - mobile Android
+        - web Chrome
+        - web Safari
+        - backend (Supabase / Edge)
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Repro steps
+      description: Sıra ilə dəqiq addımlar
+      placeholder: |
+        1. Login as employee
+        2. Tap "Confirm" on morning gate
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Recording
+      description: UI bug-sa şəkil və ya video lazımdır
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sentry / console logs
+      description: Error stack trace, network request, console output
+    validations:
+      required: false
+
+  - type: input
+    id: build
+    attributes:
+      label: Build / commit
+      placeholder: e.g. v0.2.3 or commit hash 046d32a
+    validations:
+      required: false
