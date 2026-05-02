@@ -54,3 +54,9 @@ android/.gradle/
 
 # Sentry
 .sentryclirc
+
+# TS incremental
+*.tsbuildinfo
+
+# Swarm adapter local turn logs
+.openclaw-adapter/
