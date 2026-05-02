@@ -46,6 +46,7 @@
   <script type="text/babel" src="flow4-manager.jsx"></script>
   <script type="text/babel" src="flow5-rewards.jsx"></script>
   <script type="text/babel" src="flow6-hr.jsx"></script>
+  <script type="text/babel" src="flow7-checkout.jsx"></script>
 
   <script type="text/babel">
     const { DesignCanvas, DCSection, DCArtboard, DCPostIt } = window;
@@ -100,6 +101,22 @@
             </DCArtboard>
           </DCSection>
 
+          {/* ───────── 1b. Əməkdaş — Check-out axını (hibrid) ───────── */}
+          <DCSection id="flow-checkout" title="01b — Əməkdaş · check-out axını (hibrid)" subtitle="Gün rituali — bağlama, yox saatı ölçmə. Ofis auto · uzaqdan bildiriş · unudan üçün düzəliş.">
+            <DCArtboard id="co1" label="18:07 · Ofis · Wi-Fi kəsildi" width={390} height={844}>
+              <CheckoutAutoPrompt/>
+            </DCArtboard>
+            <DCArtboard id="co2" label="18:00 · Uzaqdan · gün sonu bildirişi" width={390} height={844}>
+              <CheckoutRemoteEOD/>
+            </DCArtboard>
+            <DCArtboard id="co3" label="Sabah · 'dünən nə vaxt çıxdın?'" width={390} height={844}>
+              <CheckoutForgot/>
+            </DCArtboard>
+            <DCArtboard id="co4" label="Gün bağlandı · xülasə + streak" width={390} height={844}>
+              <CheckoutDaySummary/>
+            </DCArtboard>
+          </DCSection>
+
           {/* ───────── 2. Əməkdaş — Şəxsi dashboard + Weekly Wrap ───────── */}
           <DCSection id="flow-personal" title="02 — Əməkdaş · şəxsi səhifə + həftəlik xülasə" subtitle="Özünə güzgü. Müqayisə özün-özünlədir, başqası ilə yox.">
             <DCArtboard id="p1" label="Şəxsi dashboard" width={390} height={844}>
@@ -114,12 +131,18 @@
           </DCSection>
 
           {/* ───────── 3. Əməkdaş — Sorğu axını ───────── */}
-          <DCSection id="flow-request" title="03 — Əməkdaş · sorğu göndərmə" subtitle="Tək kanal. CEO-ya birbaşa yazışma yox — sistem keçidi.">
+          <DCSection id="flow-request" title="03 — Əməkdaş · sorğu göndərmə + cavab" subtitle="Tək kanal. CEO-ya birbaşa yazışma yox — sistem keçidi. Cavab əməkdaşa bildiriş kimi gəlir.">
             <DCArtboard id="r1" label="Sorğu yazma · uzaqdan iş" width={390} height={844}>
               <RequestForm/>
             </DCArtboard>
             <DCArtboard id="r2" label="Göndərildi · cavab gözlə" width={390} height={844}>
               <RequestSent/>
+            </DCArtboard>
+            <DCArtboard id="r3" label="Cavab · sorğun təsdiqləndi ✓" width={390} height={844}>
+              <RequestApproved/>
+            </DCArtboard>
+            <DCArtboard id="r4" label="Cavab · bu dəfə olmadı · yenidən göndər" width={390} height={844}>
+              <RequestDeclined/>
             </DCArtboard>
           </DCSection>
 
@@ -138,13 +161,19 @@
             <DCArtboard id="rw1" label="Kudos · komandadasına təşəkkür" width={390} height={844}>
               <KudosCompose/>
             </DCArtboard>
-            <DCArtboard id="rw2" label="Mərhələ açıldı · 30 gün ritm" width={390} height={844}>
+            <DCArtboard id="rw2" label="Kudos · aldın! tam görünüş" width={390} height={844}>
+              <KudosReceived/>
+            </DCArtboard>
+            <DCArtboard id="rw3" label="Mərhələ açıldı · 30 gün ritm" width={390} height={844}>
               <MilestoneUnlock/>
             </DCArtboard>
-            <DCArtboard id="rw3" label="Mükafat kataloqu · seçim" width={1100} height={680}>
+            <DCArtboard id="rw4" label="Mükafat götür · istifadə kodu" width={390} height={844}>
+              <RewardRedeem/>
+            </DCArtboard>
+            <DCArtboard id="rw5" label="Mükafat kataloqu · seçim" width={1100} height={680}>
               <RewardsCatalog/>
             </DCArtboard>
-            <DCArtboard id="rw4" label="Manager spotlight · aylıq seçim" width={1280} height={760}>
+            <DCArtboard id="rw6" label="Manager spotlight · aylıq seçim" width={1280} height={760}>
               <WebFrame label="manager/spotlight" w={1280} h={760}><ManagerSpotlight/></WebFrame>
             </DCArtboard>
           </DCSection>

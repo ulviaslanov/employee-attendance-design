@@ -207,7 +207,117 @@ function ManagerSpotlight() {
   );
 }
 
+// Screen 5: Kudos received — full view after notification tap
+function KudosReceived() {
+  return (
+    <div style={{ width: 390, height: 844, background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700 }}>
+        <span>16:22</span><span style={{ fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+        {/* Hero — plum */}
+        <div style={{ background: 'linear-gradient(135deg, oklch(0.96 0.03 320), oklch(0.94 0.04 340))', borderRadius: 20, padding: 22, border: '1.5px solid oklch(0.88 0.05 320)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', right: -20, bottom: -20, fontSize: 100, color: 'oklch(0.60 0.16 320 / 0.12)', lineHeight: 1 }}>♡</div>
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.50 0.14 320)', textTransform: 'uppercase', marginBottom: 14 }}>Sənə kudos gəldi</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <window.Avatar name="Cavid Hüseynov" size={52}/>
+              <div>
+                <div style={{ fontFamily: '"Fraunces", serif', fontSize: 22, fontWeight: 600, letterSpacing: -0.3, color: '#1a1410' }}>Cavid Hüseynov</div>
+                <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)', marginTop: 2 }}>Senior Backend · Mühəndislik</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Value tag */}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', borderRadius: 999, background: 'oklch(0.50 0.14 320)', color: 'white', fontSize: 13, fontWeight: 700 }}>
+            <window.Icon.Heart s={14} c="white"/>
+            Komanda dayağı
+          </div>
+        </div>
+
+        {/* Full message */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 18, border: '1px solid oklch(0.92 0.01 60)', flex: 1 }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 12 }}>Yazıb ki</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 18, lineHeight: 1.6, color: '#1a1410', fontStyle: 'italic' }}>
+            "Spec-imi yoxlayıb 3 yeri göstərdin — vaxtımı qoruyub saxladın. Sən olmasan, nə olardı bilmirəm!"
+          </div>
+        </div>
+
+        {/* Visibility note */}
+        <div style={{ background: 'oklch(0.96 0.03 320)', borderRadius: 10, padding: 12, fontSize: 11.5, color: 'oklch(0.40 0.14 320)', lineHeight: 1.5, border: '1px solid oklch(0.90 0.04 320)' }}>
+          Bu kudos komandada görünür. Dəyər tag-i HR-ın illik analizinə gedir.
+        </div>
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button style={{ flex: 1, background: '#1a1410', color: 'white', padding: '14px', borderRadius: 12, fontSize: 14, fontWeight: 700, border: 'none' }}>Minnətdaram!</button>
+          <button style={{ flex: 1, background: 'white', color: '#1a1410', padding: '14px', borderRadius: 12, fontSize: 14, fontWeight: 600, border: '1px solid oklch(0.85 0.01 60)' }}>Sən də göndər →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Screen 6: Reward redemption — claim a ready reward
+function RewardRedeem() {
+  return (
+    <div style={{ width: 390, height: 844, background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700 }}>
+        <span>14:45</span><span style={{ fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+        {/* Hero — dark celebration */}
+        <div style={{ background: 'linear-gradient(180deg, oklch(0.20 0.04 35), oklch(0.18 0.03 35))', borderRadius: 20, padding: 28, textAlign: 'center', position: 'relative', overflow: 'hidden', color: 'oklch(0.96 0.02 35)' }}>
+          <div style={{ position: 'absolute', left: -12, top: -12, fontSize: 80, color: 'oklch(0.45 0.16 35 / 0.25)', lineHeight: 1 }}>☕</div>
+          <div style={{ position: 'absolute', right: -12, bottom: -12, fontSize: 80, color: 'oklch(0.45 0.16 35 / 0.25)', lineHeight: 1 }}>☕</div>
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.6, color: 'oklch(0.78 0.18 35)', textTransform: 'uppercase' }}>Mükafat hazırdır!</div>
+            <div style={{ fontSize: 56, margin: '12px 0 8px', lineHeight: 1 }}>☕</div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 28, lineHeight: 1.1, letterSpacing: -0.6, fontWeight: 500 }}>Qəhvə kuponu</div>
+            <div style={{ fontSize: 13, color: 'oklch(0.78 0.10 35)', marginTop: 6 }}>7 gün ritm nailiyyəti · 15 AZN dəyərində</div>
+          </div>
+        </div>
+
+        {/* Redemption code */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 20, border: '1px solid oklch(0.92 0.01 60)', textAlign: 'center' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 12 }}>İstifadə kodu</div>
+          <div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 26, fontWeight: 700, letterSpacing: 4, color: '#1a1410', padding: '16px 20px', background: 'oklch(0.96 0.04 35)', borderRadius: 12, border: '1.5px dashed oklch(0.65 0.18 35)' }}>
+            CAF-2026-M7
+          </div>
+          <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)', marginTop: 10, lineHeight: 1.5 }}>HR-a göstər · ofis 204 · 30 gün etibarlıdır</div>
+        </div>
+
+        {/* Expiry */}
+        <div style={{ background: 'oklch(0.96 0.04 35)', borderRadius: 12, padding: 12, border: '1px solid oklch(0.88 0.06 35)', display: 'flex', gap: 10, alignItems: 'center' }}>
+          <window.Icon.Clock s={14} c="oklch(0.55 0.16 35)"/>
+          <div style={{ fontSize: 12.5, color: 'oklch(0.45 0.10 35)' }}>Son istifadə: <b>26 May 2026</b></div>
+        </div>
+
+        {/* How to use */}
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Necə istifadə etmək olar?</div>
+          {[
+            '1. HR-ın yanına get (otaq 204)',
+            '2. Kodu göstər',
+            '3. Qəhvəni seç — soyuq da qəbul edilir 😉',
+          ].map((s, i) => (
+            <div key={i} style={{ fontSize: 13, color: '#1a1410', lineHeight: 1.7 }}>{s}</div>
+          ))}
+        </div>
+
+        <button style={{ marginTop: 'auto', background: 'transparent', color: '#1a1410', padding: '12px 16px', borderRadius: 12, fontSize: 13, fontWeight: 600, border: '1px solid oklch(0.85 0.01 60)' }}>Mükafatlarıma qayıt</button>
+      </div>
+    </div>
+  );
+}
+
 window.KudosCompose = KudosCompose;
 window.MilestoneUnlock = MilestoneUnlock;
 window.RewardsCatalog = RewardsCatalog;
 window.ManagerSpotlight = ManagerSpotlight;
+window.KudosReceived = KudosReceived;
+window.RewardRedeem = RewardRedeem;

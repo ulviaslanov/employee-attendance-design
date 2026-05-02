@@ -1,0 +1,3091 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Employee Attendance &amp; Performance — Dizayn axtarışı</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    html, body { margin: 0; padding: 0; background: #ebe5d8; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { background-image:
+      radial-gradient(circle at 20% 30%, oklch(0.96 0.02 60 / 0.4) 0px, transparent 60%),
+      radial-gradient(circle at 80% 70%, oklch(0.94 0.03 35 / 0.3) 0px, transparent 60%);
+    }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- ===== JSX source files — order matters ===== -->
+
+  <!-- ===== tokens.jsx ===== -->
+  <script type="text/babel">
+// Shared tokens for Employee Attendance & Performance system
+// Friendly, professional, warm — not surveillance.
+
+// Status: where is this employee right now?
+const STATUS = {
+  office:    { label: 'Ofisdə',     short: '●', tone: 'success', desc: 'Wi-Fi / GPS təsdiqlənib' },
+  remote:    { label: 'Uzaqdan',    short: '◐', tone: 'info',    desc: 'İcazəli — evdən' },
+  meeting:   { label: 'Görüşdə',    short: '◉', tone: 'accent',  desc: 'Kalendarda görüş' },
+  field:     { label: 'Çöldə',      short: '◇', tone: 'accent',  desc: 'Müştəri / sahə işi' },
+  break:     { label: 'Fasilədə',   short: '◔', tone: 'muted',   desc: 'Nahar / qəhvə' },
+  off:       { label: 'Məzuniyyət', short: '○', tone: 'muted',   desc: 'İcazəli istirahət' },
+  sick:      { label: 'Xəstəlik',   short: '+', tone: 'warn',    desc: 'Üzrlü' },
+  notyet:    { label: 'Hələ yox',   short: '·', tone: 'neutral', desc: 'Bu gün check-in yoxdur' },
+};
+
+// Request types — single channel, no CEO-DM bypass
+const REQUEST_TYPES = {
+  remote:    { label: 'Uzaqdan iş',    icon: '⌂', tone: 'info'   },
+  leave:     { label: 'Məzuniyyət',    icon: '○', tone: 'muted'  },
+  sick:      { label: 'Xəstəlik',      icon: '+', tone: 'warn'   },
+  field:     { label: 'Çöldə iş',      icon: '◇', tone: 'accent' },
+  short:     { label: 'Qısa icazə',    icon: '◔', tone: 'neutral'},
+};
+
+// Warm, friendly accents — OKLCH for harmony. Same chroma/lightness, varied hue.
+const ACCENTS = {
+  // primary: soft warm coral (Code Academy heritage)
+  coral:  { fg: 'oklch(0.55 0.16 35)',  bg: 'oklch(0.96 0.04 35)',  solid: 'oklch(0.65 0.18 35)',  ring: 'oklch(0.65 0.18 35 / 0.25)' },
+  // success: muted sage green (not aggressive lime)
+  sage:   { fg: 'oklch(0.50 0.10 155)', bg: 'oklch(0.96 0.03 155)', solid: 'oklch(0.62 0.13 155)', ring: 'oklch(0.62 0.13 155 / 0.25)' },
+  // info: dusty blue (not corporate)
+  dusk:   { fg: 'oklch(0.50 0.12 240)', bg: 'oklch(0.96 0.03 240)', solid: 'oklch(0.60 0.14 240)', ring: 'oklch(0.60 0.14 240 / 0.25)' },
+  // warn: warm amber
+  amber:  { fg: 'oklch(0.55 0.15 75)',  bg: 'oklch(0.96 0.05 75)',  solid: 'oklch(0.72 0.16 75)',  ring: 'oklch(0.72 0.16 75 / 0.25)' },
+  // accent: soft plum
+  plum:   { fg: 'oklch(0.50 0.14 320)', bg: 'oklch(0.96 0.03 320)', solid: 'oklch(0.60 0.16 320)', ring: 'oklch(0.60 0.16 320 / 0.25)' },
+  // neutral: warm taupe
+  taupe:  { fg: 'oklch(0.45 0.02 60)',  bg: 'oklch(0.94 0.01 60)',  solid: 'oklch(0.55 0.03 60)',  ring: 'oklch(0.55 0.03 60 / 0.20)' },
+};
+
+// Status → accent mapping
+const STATUS_ACCENT = {
+  office:  ACCENTS.sage,
+  remote:  ACCENTS.dusk,
+  meeting: ACCENTS.plum,
+  field:   ACCENTS.plum,
+  break:   ACCENTS.taupe,
+  off:     ACCENTS.taupe,
+  sick:    ACCENTS.amber,
+  notyet:  ACCENTS.taupe,
+};
+
+// Streak intensity — gentle, not punishing
+function streakIntensity(n) {
+  if (n >= 60) return { glyph: '◆', color: 'oklch(0.60 0.18 35)',  label: 'Mayak' };
+  if (n >= 30) return { glyph: '◆', color: 'oklch(0.65 0.16 50)',  label: 'Davamlı' };
+  if (n >= 14) return { glyph: '◇', color: 'oklch(0.68 0.15 75)',  label: 'Ritm' };
+  if (n >= 7)  return { glyph: '◇', color: 'oklch(0.72 0.13 95)',  label: 'Başlanğıc' };
+  if (n >= 1)  return { glyph: '·', color: 'oklch(0.70 0.04 60)',  label: 'Yeni' };
+  return         { glyph: '·', color: 'oklch(0.70 0 0)',          label: '—' };
+}
+
+// Helper: convert minutes to "Xs Ydəq"
+function fmtMinutes(m) {
+  if (m < 60) return `${m} dəq`;
+  const h = Math.floor(m / 60);
+  const r = m % 60;
+  return r === 0 ? `${h} saat` : `${h}s ${r}dəq`;
+}
+
+// Helper: time-of-day formatting
+function fmtTime(h, m = 0) {
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+
+// Tiny inline icons — minimal, geometric. Match Code Academy style.
+const Icon = {
+  Check: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M3 8.5l3 3 7-7" stroke={c} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  X: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M4 4l8 8M12 4l-8 8" stroke={c} strokeWidth="2.4" strokeLinecap="round" />
+    </svg>
+  ),
+  Clock: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="6" stroke={c} strokeWidth="1.8" />
+      <path d="M8 4.5V8l2.5 1.5" stroke={c} strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  ),
+  Pin: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M8 14V9M8 9c2.5 0 4-1.8 4-4 0-2.2-1.8-4-4-4S4 2.8 4 5c0 2.2 1.5 4 4 4z" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/>
+      <circle cx="8" cy="5" r="1.4" fill={c}/>
+    </svg>
+  ),
+  Home: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M2 7l6-5 6 5v6a1 1 0 01-1 1H3a1 1 0 01-1-1V7z" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/>
+      <path d="M6 14V9h4v5" stroke={c} strokeWidth="1.6"/>
+    </svg>
+  ),
+  Wifi: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M2 6c3.5-3 8.5-3 12 0M4 8.5c2.3-2 5.7-2 8 0M6.5 11c1-.7 2-.7 3 0" stroke={c} strokeWidth="1.6" strokeLinecap="round"/>
+      <circle cx="8" cy="13" r="1" fill={c}/>
+    </svg>
+  ),
+  Search: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <circle cx="7" cy="7" r="4.5" stroke={c} strokeWidth="1.8" />
+      <path d="M11 11l3 3" stroke={c} strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  ),
+  Diamond: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill={c}>
+      <path d="M8 1l5 5-5 9-5-9 5-5z" />
+    </svg>
+  ),
+  Sparkle: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill={c}>
+      <path d="M8 1l1.6 4.4L14 7l-4.4 1.6L8 13l-1.6-4.4L2 7l4.4-1.6L8 1z" />
+    </svg>
+  ),
+  Dot: ({ s = 6, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill={c} /></svg>
+  ),
+  ChevronR: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M6 3l5 5-5 5" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  ArrowR: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M3 8h10M9 4l4 4-4 4" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  Plus: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M8 3v10M3 8h10" stroke={c} strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  ),
+  Calendar: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <rect x="2" y="3" width="12" height="11" rx="1.5" stroke={c} strokeWidth="1.6"/>
+      <path d="M2 6h12M5 1.5v3M11 1.5v3" stroke={c} strokeWidth="1.6" strokeLinecap="round"/>
+    </svg>
+  ),
+  Filter: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M2 4h12M4 8h8M6 12h4" stroke={c} strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  ),
+  Bell: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M4 11V8a4 4 0 018 0v3l1 1.5H3L4 11z" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/>
+      <path d="M6.5 13.5a1.5 1.5 0 003 0" stroke={c} strokeWidth="1.6" strokeLinecap="round"/>
+    </svg>
+  ),
+  Heart: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill={c}>
+      <path d="M8 13.5s-5-3-5-7a3 3 0 015-2 3 3 0 015 2c0 4-5 7-5 7z"/>
+    </svg>
+  ),
+  Trophy: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill="none">
+      <path d="M5 2h6v4a3 3 0 11-6 0V2z" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/>
+      <path d="M3 4H2v1a2 2 0 002 2M13 4h1v1a2 2 0 01-2 2M6 11v3h4v-3" stroke={c} strokeWidth="1.6" strokeLinejoin="round"/>
+    </svg>
+  ),
+  Zap: ({ s = 14, c = 'currentColor' }) => (
+    <svg width={s} height={s} viewBox="0 0 16 16" fill={c}>
+      <path d="M9 1L3 9h4l-1 6 6-8H8l1-6z"/>
+    </svg>
+  ),
+};
+
+// Reusable little components
+function StatusDot({ status, size = 8 }) {
+  const accent = STATUS_ACCENT[status] || ACCENTS.taupe;
+  return (
+    <span style={{
+      display: 'inline-block', width: size, height: size, borderRadius: '50%',
+      background: accent.solid, boxShadow: `0 0 0 2px ${accent.ring}`,
+    }} />
+  );
+}
+
+function StatusChip({ status, size = 'md' }) {
+  const s = STATUS[status] || STATUS.notyet;
+  const accent = STATUS_ACCENT[status] || ACCENTS.taupe;
+  const pad = size === 'sm' ? '3px 8px' : '5px 10px';
+  const fs = size === 'sm' ? 10.5 : 12;
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6,
+      padding: pad, borderRadius: 999,
+      background: accent.bg, color: accent.fg,
+      fontSize: fs, fontWeight: 600, lineHeight: 1,
+      whiteSpace: 'nowrap',
+    }}>
+      <StatusDot status={status} size={size === 'sm' ? 6 : 7}/>
+      {s.label}
+    </span>
+  );
+}
+
+// Avatar — initials with gentle warm tone (no real photos)
+function Avatar({ name, size = 32, tone }) {
+  const initials = (name || '').split(' ').map(s => s[0]).slice(0,2).join('').toUpperCase();
+  const palette = [ACCENTS.coral, ACCENTS.sage, ACCENTS.dusk, ACCENTS.plum, ACCENTS.amber];
+  // Deterministic palette pick from name hash
+  const hash = (name || '').split('').reduce((a,c) => a + c.charCodeAt(0), 0);
+  const a = tone || palette[hash % palette.length];
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%',
+      background: a.bg, color: a.fg,
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: size * 0.4, fontWeight: 700, letterSpacing: -0.2,
+      flexShrink: 0,
+    }}>
+      {initials}
+    </div>
+  );
+}
+
+window.STATUS = STATUS;
+window.STATUS_ACCENT = STATUS_ACCENT;
+window.REQUEST_TYPES = REQUEST_TYPES;
+window.ACCENTS = ACCENTS;
+window.streakIntensity = streakIntensity;
+window.fmtMinutes = fmtMinutes;
+window.fmtTime = fmtTime;
+window.Icon = Icon;
+window.StatusDot = StatusDot;
+window.StatusChip = StatusChip;
+window.Avatar = Avatar;
+
+  </script>
+
+  <!-- ===== data.jsx ===== -->
+  <script type="text/babel">
+// Mock data for Employee Attendance & Performance system
+// 30-100 person company, friendly tone, realistic Azerbaijani names
+
+const TEAMS = [
+  { id: 'eng',     name: 'Mühəndislik',  accent: 'dusk',  lead: 'Aysu Məmmədova' },
+  { id: 'design',  name: 'Dizayn',       accent: 'plum',  lead: 'Rəşad Quliyev' },
+  { id: 'product', name: 'Məhsul',       accent: 'coral', lead: 'Leyla Hüseynova' },
+  { id: 'ops',     name: 'Əməliyyat',    accent: 'sage',  lead: 'Toğrul Əliyev' },
+  { id: 'sales',   name: 'Satış',        accent: 'amber', lead: 'Səbinə Quliyeva' },
+];
+
+// Office locations with geofence
+const LOCATIONS = [
+  { id: 'hq',     name: 'Mərkəzi ofis',   address: '28 May küç. 14, Bakı',          radius: 80 },
+  { id: 'bayil',  name: 'Bayıl filialı',  address: 'Neftçilər pr. 22, Bakı',         radius: 60 },
+];
+
+// Employees — 18 sample, mix of teams, statuses, streaks
+const EMPLOYEES = [
+  // Engineering
+  { id: 'e01', name: 'Aysu Məmmədova',   role: 'Eng Lead',          team: 'eng',     status: 'office',  arrived: '09:02', streak: 47, hoursWeek: 38.5, focusToday: 180, isLead: true },
+  { id: 'e02', name: 'Cavid Hüseynov',   role: 'Senior Backend',    team: 'eng',     status: 'remote',  arrived: '08:48', streak: 23, hoursWeek: 36,   focusToday: 220 },
+  { id: 'e03', name: 'Nigar Quliyeva',   role: 'Frontend',          team: 'eng',     status: 'office',  arrived: '09:14', streak: 8,  hoursWeek: 32,   focusToday: 140 },
+  { id: 'e04', name: 'Tural Əhmədli',    role: 'iOS Developer',     team: 'eng',     status: 'meeting', arrived: '08:55', streak: 61, hoursWeek: 40,   focusToday: 95 },
+  { id: 'e05', name: 'Səma Bayramova',   role: 'QA Engineer',       team: 'eng',     status: 'sick',    arrived: null,    streak: 0,  hoursWeek: 14,   focusToday: 0 },
+
+  // Design
+  { id: 'd01', name: 'Rəşad Quliyev',    role: 'Design Lead',       team: 'design',  status: 'office',  arrived: '09:30', streak: 12, hoursWeek: 35,   focusToday: 110, isLead: true },
+  { id: 'd02', name: 'Mələk Tağıyeva',   role: 'Product Designer',  team: 'design',  status: 'remote',  arrived: '09:05', streak: 19, hoursWeek: 38,   focusToday: 200 },
+  { id: 'd03', name: 'Kamran İsmayılov', role: 'UI Designer',       team: 'design',  status: 'office',  arrived: '09:45', streak: 4,  hoursWeek: 30,   focusToday: 75 },
+
+  // Product
+  { id: 'p01', name: 'Leyla Hüseynova',  role: 'Head of Product',   team: 'product', status: 'meeting', arrived: '08:40', streak: 32, hoursWeek: 42,   focusToday: 60, isLead: true },
+  { id: 'p02', name: 'Elnur Babayev',    role: 'Product Manager',   team: 'product', status: 'office',  arrived: '09:08', streak: 15, hoursWeek: 37,   focusToday: 130 },
+
+  // Ops
+  { id: 'o01', name: 'Toğrul Əliyev',    role: 'Head of Ops',       team: 'ops',     status: 'office',  arrived: '08:30', streak: 89, hoursWeek: 41,   focusToday: 165, isLead: true },
+  { id: 'o02', name: 'Aydan Rəsulova',   role: 'HR Specialist',     team: 'ops',     status: 'office',  arrived: '08:55', streak: 41, hoursWeek: 40,   focusToday: 145 },
+  { id: 'o03', name: 'Fərid Cəbiyev',    role: 'Office Manager',    team: 'ops',     status: 'field',   arrived: '09:00', streak: 22, hoursWeek: 38,   focusToday: 80 },
+
+  // Sales
+  { id: 's01', name: 'Səbinə Quliyeva',  role: 'Sales Lead',        team: 'sales',   status: 'field',   arrived: '08:45', streak: 28, hoursWeek: 42,   focusToday: 90, isLead: true },
+  { id: 's02', name: 'Ramil Əzizov',     role: 'Account Executive', team: 'sales',   status: 'remote',  arrived: '09:20', streak: 7,  hoursWeek: 35,   focusToday: 175 },
+  { id: 's03', name: 'Günay Vəliyeva',   role: 'Account Manager',   team: 'sales',   status: 'off',     arrived: null,    streak: 14, hoursWeek: 0,    focusToday: 0 },
+  { id: 's04', name: 'Vüsal Səfərov',    role: 'BDR',               team: 'sales',   status: 'break',   arrived: '09:12', streak: 11, hoursWeek: 36,   focusToday: 105 },
+  { id: 's05', name: 'İlahə Mirzəyeva',  role: 'Account Executive', team: 'sales',   status: 'notyet',  arrived: null,    streak: 0,  hoursWeek: 32,   focusToday: 0 },
+];
+
+// Active requests in the system
+const REQUESTS = [
+  { id: 'r01', from: 'd02', type: 'remote',  date: '2026-04-27', range: 'Sabah',         reason: 'Konsentrasiya tələb edən dizayn işi', status: 'pending', sent: '14:22', via: 'system' },
+  { id: 'r02', from: 'e02', type: 'remote',  date: '2026-04-28', range: '2 gün',         reason: 'Uşağım xəstədir, evdən baxa bilərəm',  status: 'pending', sent: '11:05', via: 'system' },
+  { id: 'r03', from: 's02', type: 'leave',   date: '2026-05-04', range: '1 həftə',       reason: 'Planlaşdırılmış məzuniyyət',           status: 'approved', sent: 'Dünən', via: 'system' },
+  { id: 'r04', from: 'p02', type: 'short',   date: '2026-04-26', range: '14:00 — 16:00', reason: 'Həkim',                                status: 'approved', sent: 'Bu səhər', via: 'system' },
+  { id: 'r05', from: 'e05', type: 'sick',    date: '2026-04-26', range: 'Bu gün',        reason: 'Soyuqdəyməyəm',                        status: 'approved', sent: '07:48', via: 'system' },
+  { id: 'r06', from: 'e03', type: 'remote',  date: '2026-04-29', range: 'Cümə',          reason: 'Bayıl ofisində toplaşma var, evdən qoşulacam', status: 'pending', sent: 'İndi', via: 'system' },
+];
+
+// Past streaks / weekly highlights for "Weekly Wrap"
+const WRAP = {
+  earliestArrival: { day: 'Salı', time: '08:14' },
+  longestFocus:    { day: 'Çərşənbə axşamı', minutes: 245 },
+  daysOnTime:      4,
+  daysWorked:      5,
+  totalHours:      38.5,
+  vsLastWeek:      +1.5,
+  topMood:         'odaqlı', // focused
+  teammatesShout:  ['Cavid', 'Mələk'], // who said thanks to me this week
+};
+
+// Badges — milestones, not punitive
+const BADGES = [
+  { id: 'b01', name: '7 gün ritm',       desc: 'Bir həftə ardıcıl vaxtında',     unlocked: true,  icon: '◇' },
+  { id: 'b02', name: '30 gün davam',     desc: 'Bir ay ardıcıl ritm',            unlocked: true,  icon: '◆' },
+  { id: 'b03', name: 'Erkən quş',        desc: '5 gün 09:00-dan əvvəl',          unlocked: true,  icon: '☀' },
+  { id: 'b04', name: 'Dərin iş',         desc: '4 saat fasiləsiz fokus',         unlocked: true,  icon: '◉' },
+  { id: 'b05', name: 'Komanda dayağı',   desc: 'Komandadan 5+ təşəkkür',         unlocked: false, icon: '♡' },
+  { id: 'b06', name: '60 gün mayak',     desc: 'İki ay ardıcıl ritm',            unlocked: false, icon: '✦' },
+];
+
+// Activity / audit log entries
+const AUDIT = [
+  { time: '14:22', actor: 'Mələk T.',   action: 'Uzaqdan iş sorğusu göndərdi',         target: 'sabah · Rəşad Q.-yə',   tone: 'info' },
+  { time: '13:45', actor: 'Sistem',     action: 'Wi-Fi ilə avtomatik check-in',        target: 'Cavid H. · Mərkəzi ofis', tone: 'muted' },
+  { time: '11:05', actor: 'Cavid H.',   action: 'Uzaqdan iş sorğusu (2 gün)',          target: 'Aysu M.-ə',              tone: 'info' },
+  { time: '09:48', actor: 'Aysu M.',    action: 'Sorğunu təsdiqlədi',                  target: 'Cavid H. · uzaqdan',     tone: 'success' },
+  { time: '09:00', actor: 'Sistem',     action: 'Gün başladı — 14 nəfər ofisdə',       target: '4 uzaqdan, 1 məzuniyyət', tone: 'muted' },
+  { time: '08:48', actor: 'Cavid H.',   action: 'Uzaqdan check-in',                    target: 'GPS · ev',               tone: 'success' },
+  { time: '08:30', actor: 'Toğrul Ə.',  action: 'Ofisdə check-in',                     target: 'Wi-Fi · Mərkəzi',        tone: 'success' },
+  { time: '07:48', actor: 'Səma B.',    action: 'Xəstəlik bildirdi',                   target: 'Bu gün',                 tone: 'warn' },
+];
+
+// Aggregated KPIs for HR dashboard
+const COMPANY_KPIS = {
+  total:       54,
+  inOffice:    23,
+  remote:      14,
+  field:       3,
+  meeting:     5,
+  off:         4,
+  sick:        2,
+  notyet:      3,
+  pendingReqs: 6,
+  thisWeekHours: 1986, // total team-hours
+  onTimeRate:    0.91,
+};
+
+window.TEAMS = TEAMS;
+window.LOCATIONS = LOCATIONS;
+window.EMPLOYEES = EMPLOYEES;
+window.REQUESTS = REQUESTS;
+window.WRAP = WRAP;
+window.BADGES = BADGES;
+window.AUDIT = AUDIT;
+window.COMPANY_KPIS = COMPANY_KPIS;
+window.byId = (id) => EMPLOYEES.find(e => e.id === id);
+window.teamById = (id) => TEAMS.find(t => t.id === id);
+
+  </script>
+
+  <!-- ===== design-canvas.jsx ===== -->
+  <script type="text/babel">
+
+// DesignCanvas.jsx — Figma-ish design canvas wrapper
+// Warm gray grid bg + Sections + Artboards + PostIt notes.
+// Artboards are reorderable (grip-drag), labels/titles are inline-editable,
+// and any artboard can be opened in a fullscreen focus overlay (←/→/Esc).
+// State persists to a .design-canvas.state.json sidecar via the host
+// bridge. No assets, no deps.
+//
+// Usage:
+//   <DesignCanvas>
+//     <DCSection id="onboarding" title="Onboarding" subtitle="First-run variants">
+//       <DCArtboard id="a" label="A · Dusk" width={260} height={480}>…</DCArtboard>
+//       <DCArtboard id="b" label="B · Minimal" width={260} height={480}>…</DCArtboard>
+//     </DCSection>
+//   </DesignCanvas>
+
+const DC = {
+  bg: '#f0eee9',
+  grid: 'rgba(0,0,0,0.06)',
+  label: 'rgba(60,50,40,0.7)',
+  title: 'rgba(40,30,20,0.85)',
+  subtitle: 'rgba(60,50,40,0.6)',
+  postitBg: '#fef4a8',
+  postitText: '#5a4a2a',
+  font: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
+};
+
+// One-time CSS injection (classes are dc-prefixed so they don't collide with
+// the hosted design's own styles).
+if (typeof document !== 'undefined' && !document.getElementById('dc-styles')) {
+  const s = document.createElement('style');
+  s.id = 'dc-styles';
+  s.textContent = [
+    '.dc-editable{cursor:text;outline:none;white-space:nowrap;border-radius:3px;padding:0 2px;margin:0 -2px}',
+    '.dc-editable:focus{background:#fff;box-shadow:0 0 0 1.5px #c96442}',
+    '[data-dc-slot]{transition:transform .18s cubic-bezier(.2,.7,.3,1)}',
+    '[data-dc-slot].dc-dragging{transition:none;z-index:10;pointer-events:none}',
+    '[data-dc-slot].dc-dragging .dc-card{box-shadow:0 12px 40px rgba(0,0,0,.25),0 0 0 2px #c96442;transform:scale(1.02)}',
+    '.dc-card{transition:box-shadow .15s,transform .15s}',
+    '.dc-card *{scrollbar-width:none}',
+    '.dc-card *::-webkit-scrollbar{display:none}',
+    '.dc-labelrow{display:flex;align-items:center;gap:4px;height:24px}',
+    '.dc-grip{cursor:grab;display:flex;align-items:center;padding:5px 4px;border-radius:4px;transition:background .12s}',
+    '.dc-grip:hover{background:rgba(0,0,0,.08)}',
+    '.dc-grip:active{cursor:grabbing}',
+    '.dc-labeltext{cursor:pointer;border-radius:4px;padding:3px 6px;display:flex;align-items:center;transition:background .12s}',
+    '.dc-labeltext:hover{background:rgba(0,0,0,.05)}',
+    '.dc-expand{position:absolute;bottom:100%;right:0;margin-bottom:5px;z-index:2;opacity:0;transition:opacity .12s,background .12s;',
+    '  width:22px;height:22px;border-radius:5px;border:none;cursor:pointer;padding:0;',
+    '  background:transparent;color:rgba(60,50,40,.7);display:flex;align-items:center;justify-content:center}',
+    '.dc-expand:hover{background:rgba(0,0,0,.06);color:#2a251f}',
+    '[data-dc-slot]:hover .dc-expand{opacity:1}',
+  ].join('\n');
+  document.head.appendChild(s);
+}
+
+const DCCtx = React.createContext(null);
+
+// ─────────────────────────────────────────────────────────────
+// DesignCanvas — stateful wrapper around the pan/zoom viewport.
+// Owns runtime state (per-section order, renamed titles/labels, focused
+// artboard). Order/titles/labels persist to a .design-canvas.state.json
+// sidecar next to the HTML. Reads go via plain fetch() so the saved
+// arrangement is visible anywhere the HTML + sidecar are served together
+// (omelette preview, direct link, downloaded zip). Writes go through the
+// host's window.omelette bridge — editing requires the omelette runtime.
+// Focus is ephemeral.
+// ─────────────────────────────────────────────────────────────
+const DC_STATE_FILE = '.design-canvas.state.json';
+
+function DesignCanvas({ children, minScale, maxScale, style }) {
+  const [state, setState] = React.useState({ sections: {}, focus: null });
+  // Hold rendering until the sidecar read settles so the saved order/titles
+  // appear on first paint (no source-order flash). didRead gates writes until
+  // the read settles so the empty initial state can't clobber a slow read;
+  // skipNextWrite suppresses the one echo-write that would otherwise follow
+  // hydration.
+  const [ready, setReady] = React.useState(false);
+  const didRead = React.useRef(false);
+  const skipNextWrite = React.useRef(false);
+
+  React.useEffect(() => {
+    let off = false;
+    fetch('./' + DC_STATE_FILE)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((saved) => {
+        if (off || !saved || !saved.sections) return;
+        skipNextWrite.current = true;
+        setState((s) => ({ ...s, sections: saved.sections }));
+      })
+      .catch(() => {})
+      .finally(() => { didRead.current = true; if (!off) setReady(true); });
+    const t = setTimeout(() => { if (!off) setReady(true); }, 150);
+    return () => { off = true; clearTimeout(t); };
+  }, []);
+
+  React.useEffect(() => {
+    if (!didRead.current) return;
+    if (skipNextWrite.current) { skipNextWrite.current = false; return; }
+    const t = setTimeout(() => {
+      window.omelette?.writeFile(DC_STATE_FILE, JSON.stringify({ sections: state.sections })).catch(() => {});
+    }, 250);
+    return () => clearTimeout(t);
+  }, [state.sections]);
+
+  // Build registries synchronously from children so FocusOverlay can read
+  // them in the same render. Only direct DCSection > DCArtboard children are
+  // walked — wrapping them in other elements opts out of focus/reorder.
+  const registry = {};     // slotId -> { sectionId, artboard }
+  const sectionMeta = {};  // sectionId -> { title, subtitle, slotIds[] }
+  const sectionOrder = [];
+  React.Children.forEach(children, (sec) => {
+    if (!sec || sec.type !== DCSection) return;
+    const sid = sec.props.id ?? sec.props.title;
+    if (!sid) return;
+    sectionOrder.push(sid);
+    const persisted = state.sections[sid] || {};
+    const srcIds = [];
+    React.Children.forEach(sec.props.children, (ab) => {
+      if (!ab || ab.type !== DCArtboard) return;
+      const aid = ab.props.id ?? ab.props.label;
+      if (!aid) return;
+      registry[`${sid}/${aid}`] = { sectionId: sid, artboard: ab };
+      srcIds.push(aid);
+    });
+    const kept = (persisted.order || []).filter((k) => srcIds.includes(k));
+    sectionMeta[sid] = {
+      title: persisted.title ?? sec.props.title,
+      subtitle: sec.props.subtitle,
+      slotIds: [...kept, ...srcIds.filter((k) => !kept.includes(k))],
+    };
+  });
+
+  const api = React.useMemo(() => ({
+    state,
+    section: (id) => state.sections[id] || {},
+    patchSection: (id, p) => setState((s) => ({
+      ...s,
+      sections: { ...s.sections, [id]: { ...s.sections[id], ...(typeof p === 'function' ? p(s.sections[id] || {}) : p) } },
+    })),
+    setFocus: (slotId) => setState((s) => ({ ...s, focus: slotId })),
+  }), [state]);
+
+  // Esc exits focus; any outside pointerdown commits an in-progress rename.
+  React.useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') api.setFocus(null); };
+    const onPd = (e) => {
+      const ae = document.activeElement;
+      if (ae && ae.isContentEditable && !ae.contains(e.target)) ae.blur();
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onPd, true);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onPd, true);
+    };
+  }, [api]);
+
+  return (
+    <DCCtx.Provider value={api}>
+      <DCViewport minScale={minScale} maxScale={maxScale} style={style}>{ready && children}</DCViewport>
+      {state.focus && registry[state.focus] && (
+        <DCFocusOverlay entry={registry[state.focus]} sectionMeta={sectionMeta} sectionOrder={sectionOrder} />
+      )}
+    </DCCtx.Provider>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// DCViewport — transform-based pan/zoom (internal)
+//
+// Input mapping (Figma-style):
+//   • trackpad pinch  → zoom   (ctrlKey wheel; Safari gesture* events)
+//   • trackpad scroll → pan    (two-finger)
+//   • mouse wheel     → zoom   (notched; distinguished from trackpad scroll)
+//   • middle-drag / primary-drag-on-bg → pan
+//
+// Transform state lives in a ref and is written straight to the DOM
+// (translate3d + will-change) so wheel ticks don't go through React —
+// keeps pans at 60fps on dense canvases.
+// ─────────────────────────────────────────────────────────────
+function DCViewport({ children, minScale = 0.1, maxScale = 8, style = {} }) {
+  const vpRef = React.useRef(null);
+  const worldRef = React.useRef(null);
+  const tf = React.useRef({ x: 0, y: 0, scale: 1 });
+
+  const apply = React.useCallback(() => {
+    const { x, y, scale } = tf.current;
+    const el = worldRef.current;
+    if (el) el.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+  }, []);
+
+  React.useEffect(() => {
+    const vp = vpRef.current;
+    if (!vp) return;
+
+    const zoomAt = (cx, cy, factor) => {
+      const r = vp.getBoundingClientRect();
+      const px = cx - r.left, py = cy - r.top;
+      const t = tf.current;
+      const next = Math.min(maxScale, Math.max(minScale, t.scale * factor));
+      const k = next / t.scale;
+      // keep the world point under the cursor fixed
+      t.x = px - (px - t.x) * k;
+      t.y = py - (py - t.y) * k;
+      t.scale = next;
+      apply();
+    };
+
+    // Mouse-wheel vs trackpad-scroll heuristic. A physical wheel sends
+    // line-mode deltas (Firefox) or large integer pixel deltas with no X
+    // component (Chrome/Safari, typically multiples of 100/120). Trackpad
+    // two-finger scroll sends small/fractional pixel deltas, often with
+    // non-zero deltaX. ctrlKey is set by the browser for trackpad pinch.
+    const isMouseWheel = (e) =>
+      e.deltaMode !== 0 ||
+      (e.deltaX === 0 && Number.isInteger(e.deltaY) && Math.abs(e.deltaY) >= 40);
+
+    const onWheel = (e) => {
+      e.preventDefault();
+      if (isGesturing) return; // Safari: gesture* owns the pinch — discard concurrent wheels
+      if (e.ctrlKey) {
+        // trackpad pinch (or explicit ctrl+wheel)
+        zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.01));
+      } else if (isMouseWheel(e)) {
+        // notched mouse wheel — fixed-ratio step per click
+        zoomAt(e.clientX, e.clientY, Math.exp(-Math.sign(e.deltaY) * 0.18));
+      } else {
+        // trackpad two-finger scroll — pan
+        tf.current.x -= e.deltaX;
+        tf.current.y -= e.deltaY;
+        apply();
+      }
+    };
+
+    // Safari sends native gesture* events for trackpad pinch with a smooth
+    // e.scale; preferring these over the ctrl+wheel fallback gives a much
+    // better feel there. No-ops on other browsers. Safari also fires
+    // ctrlKey wheel events during the same pinch — isGesturing makes
+    // onWheel drop those entirely so they neither zoom nor pan.
+    let gsBase = 1;
+    let isGesturing = false;
+    const onGestureStart = (e) => { e.preventDefault(); isGesturing = true; gsBase = tf.current.scale; };
+    const onGestureChange = (e) => {
+      e.preventDefault();
+      zoomAt(e.clientX, e.clientY, (gsBase * e.scale) / tf.current.scale);
+    };
+    const onGestureEnd = (e) => { e.preventDefault(); isGesturing = false; };
+
+    // Drag-pan: middle button anywhere, or primary button on canvas
+    // background (anything that isn't an artboard or an inline editor).
+    let drag = null;
+    const onPointerDown = (e) => {
+      const onBg = !e.target.closest('[data-dc-slot], .dc-editable');
+      if (!(e.button === 1 || (e.button === 0 && onBg))) return;
+      e.preventDefault();
+      vp.setPointerCapture(e.pointerId);
+      drag = { id: e.pointerId, lx: e.clientX, ly: e.clientY };
+      vp.style.cursor = 'grabbing';
+    };
+    const onPointerMove = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      tf.current.x += e.clientX - drag.lx;
+      tf.current.y += e.clientY - drag.ly;
+      drag.lx = e.clientX; drag.ly = e.clientY;
+      apply();
+    };
+    const onPointerUp = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      vp.releasePointerCapture(e.pointerId);
+      drag = null;
+      vp.style.cursor = '';
+    };
+
+    vp.addEventListener('wheel', onWheel, { passive: false });
+    vp.addEventListener('gesturestart', onGestureStart, { passive: false });
+    vp.addEventListener('gesturechange', onGestureChange, { passive: false });
+    vp.addEventListener('gestureend', onGestureEnd, { passive: false });
+    vp.addEventListener('pointerdown', onPointerDown);
+    vp.addEventListener('pointermove', onPointerMove);
+    vp.addEventListener('pointerup', onPointerUp);
+    vp.addEventListener('pointercancel', onPointerUp);
+    return () => {
+      vp.removeEventListener('wheel', onWheel);
+      vp.removeEventListener('gesturestart', onGestureStart);
+      vp.removeEventListener('gesturechange', onGestureChange);
+      vp.removeEventListener('gestureend', onGestureEnd);
+      vp.removeEventListener('pointerdown', onPointerDown);
+      vp.removeEventListener('pointermove', onPointerMove);
+      vp.removeEventListener('pointerup', onPointerUp);
+      vp.removeEventListener('pointercancel', onPointerUp);
+    };
+  }, [apply, minScale, maxScale]);
+
+  const gridSvg = `url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M120 0H0v120' fill='none' stroke='${encodeURIComponent(DC.grid)}' stroke-width='1'/%3E%3C/svg%3E")`;
+  return (
+    <div
+      ref={vpRef}
+      className="design-canvas"
+      style={{
+        height: '100vh', width: '100vw',
+        background: DC.bg,
+        overflow: 'hidden',
+        overscrollBehavior: 'none',
+        touchAction: 'none',
+        position: 'relative',
+        fontFamily: DC.font,
+        boxSizing: 'border-box',
+        ...style,
+      }}
+    >
+      <div
+        ref={worldRef}
+        style={{
+          position: 'absolute', top: 0, left: 0,
+          transformOrigin: '0 0',
+          willChange: 'transform',
+          width: 'max-content', minWidth: '100%',
+          minHeight: '100%',
+          padding: '60px 0 80px',
+        }}
+      >
+        <div style={{ position: 'absolute', inset: -6000, backgroundImage: gridSvg, backgroundSize: '120px 120px', pointerEvents: 'none', zIndex: -1 }} />
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// DCSection — editable title + h-row of artboards in persisted order
+// ─────────────────────────────────────────────────────────────
+function DCSection({ id, title, subtitle, children, gap = 48 }) {
+  const ctx = React.useContext(DCCtx);
+  const sid = id ?? title;
+  const all = React.Children.toArray(children);
+  const artboards = all.filter((c) => c && c.type === DCArtboard);
+  const rest = all.filter((c) => !(c && c.type === DCArtboard));
+  const srcOrder = artboards.map((a) => a.props.id ?? a.props.label);
+  const sec = (ctx && sid && ctx.section(sid)) || {};
+
+  const order = React.useMemo(() => {
+    const kept = (sec.order || []).filter((k) => srcOrder.includes(k));
+    return [...kept, ...srcOrder.filter((k) => !kept.includes(k))];
+  }, [sec.order, srcOrder.join('|')]);
+
+  const byId = Object.fromEntries(artboards.map((a) => [a.props.id ?? a.props.label, a]));
+
+  return (
+    <div data-dc-section={sid} style={{ marginBottom: 80, position: 'relative' }}>
+      <div style={{ padding: '0 60px 56px' }}>
+        <DCEditable tag="div" value={sec.title ?? title}
+          onChange={(v) => ctx && sid && ctx.patchSection(sid, { title: v })}
+          style={{ fontSize: 28, fontWeight: 600, color: DC.title, letterSpacing: -0.4, marginBottom: 6, display: 'inline-block' }} />
+        {subtitle && <div style={{ fontSize: 16, color: DC.subtitle }}>{subtitle}</div>}
+      </div>
+      <div style={{ display: 'flex', gap, padding: '0 60px', alignItems: 'flex-start', width: 'max-content' }}>
+        {order.map((k) => (
+          <DCArtboardFrame key={k} sectionId={sid} artboard={byId[k]} order={order}
+            label={(sec.labels || {})[k] ?? byId[k].props.label}
+            onRename={(v) => ctx && ctx.patchSection(sid, (x) => ({ labels: { ...x.labels, [k]: v } }))}
+            onReorder={(next) => ctx && ctx.patchSection(sid, { order: next })}
+            onFocus={() => ctx && ctx.setFocus(`${sid}/${k}`)} />
+        ))}
+      </div>
+      {rest}
+    </div>
+  );
+}
+
+// DCArtboard — marker; rendered by DCArtboardFrame via DCSection.
+function DCArtboard() { return null; }
+
+function DCArtboardFrame({ sectionId, artboard, label, order, onRename, onReorder, onFocus }) {
+  const { id: rawId, label: rawLabel, width = 260, height = 480, children, style = {} } = artboard.props;
+  const id = rawId ?? rawLabel;
+  const ref = React.useRef(null);
+
+  // Live drag-reorder: dragged card sticks to cursor; siblings slide into
+  // their would-be slots in real time via transforms. DOM order only
+  // changes on drop.
+  const onGripDown = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    const me = ref.current;
+    // translateX is applied in local (pre-scale) space but pointer deltas and
+    // getBoundingClientRect().left are screen-space — divide by the viewport's
+    // current scale so the dragged card tracks the cursor at any zoom level.
+    const scale = me.getBoundingClientRect().width / me.offsetWidth || 1;
+    const peers = Array.from(document.querySelectorAll(`[data-dc-section="${sectionId}"] [data-dc-slot]`));
+    const homes = peers.map((el) => ({ el, id: el.dataset.dcSlot, x: el.getBoundingClientRect().left }));
+    const slotXs = homes.map((h) => h.x);
+    const startIdx = order.indexOf(id);
+    const startX = e.clientX;
+    let liveOrder = order.slice();
+    me.classList.add('dc-dragging');
+
+    const layout = () => {
+      for (const h of homes) {
+        if (h.id === id) continue;
+        const slot = liveOrder.indexOf(h.id);
+        h.el.style.transform = `translateX(${(slotXs[slot] - h.x) / scale}px)`;
+      }
+    };
+
+    const move = (ev) => {
+      const dx = ev.clientX - startX;
+      me.style.transform = `translateX(${dx / scale}px)`;
+      const cur = homes[startIdx].x + dx;
+      let nearest = 0, best = Infinity;
+      for (let i = 0; i < slotXs.length; i++) {
+        const d = Math.abs(slotXs[i] - cur);
+        if (d < best) { best = d; nearest = i; }
+      }
+      if (liveOrder.indexOf(id) !== nearest) {
+        liveOrder = order.filter((k) => k !== id);
+        liveOrder.splice(nearest, 0, id);
+        layout();
+      }
+    };
+
+    const up = () => {
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', up);
+      const finalSlot = liveOrder.indexOf(id);
+      me.classList.remove('dc-dragging');
+      me.style.transform = `translateX(${(slotXs[finalSlot] - homes[startIdx].x) / scale}px)`;
+      // After the settle transition, kill transitions + clear transforms +
+      // commit the reorder in the same frame so there's no visual snap-back.
+      setTimeout(() => {
+        for (const h of homes) { h.el.style.transition = 'none'; h.el.style.transform = ''; }
+        if (liveOrder.join('|') !== order.join('|')) onReorder(liveOrder);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          for (const h of homes) h.el.style.transition = '';
+        }));
+      }, 180);
+    };
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
+  };
+
+  return (
+    <div ref={ref} data-dc-slot={id} style={{ position: 'relative', flexShrink: 0 }}>
+      <div className="dc-labelrow" style={{ position: 'absolute', bottom: '100%', left: -4, marginBottom: 4, color: DC.label }}>
+        <div className="dc-grip" onPointerDown={onGripDown} title="Drag to reorder">
+          <svg width="9" height="13" viewBox="0 0 9 13" fill="currentColor"><circle cx="2" cy="2" r="1.1"/><circle cx="7" cy="2" r="1.1"/><circle cx="2" cy="6.5" r="1.1"/><circle cx="7" cy="6.5" r="1.1"/><circle cx="2" cy="11" r="1.1"/><circle cx="7" cy="11" r="1.1"/></svg>
+        </div>
+        <div className="dc-labeltext" onClick={onFocus} title="Click to focus">
+          <DCEditable value={label} onChange={onRename} onClick={(e) => e.stopPropagation()}
+            style={{ fontSize: 15, fontWeight: 500, color: DC.label, lineHeight: 1 }} />
+        </div>
+      </div>
+      <button className="dc-expand" onClick={onFocus} onPointerDown={(e) => e.stopPropagation()} title="Focus">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M7 1h4v4M5 11H1V7M11 1L7.5 4.5M1 11l3.5-3.5"/></svg>
+      </button>
+      <div className="dc-card"
+        style={{ borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06)', overflow: 'hidden', width, height, background: '#fff', ...style }}>
+        {children || <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb', fontSize: 13, fontFamily: DC.font }}>{id}</div>}
+      </div>
+    </div>
+  );
+}
+
+// Inline rename — commits on blur or Enter.
+function DCEditable({ value, onChange, style, tag = 'span', onClick }) {
+  const T = tag;
+  return (
+    <T className="dc-editable" contentEditable suppressContentEditableWarning
+      onClick={onClick}
+      onPointerDown={(e) => e.stopPropagation()}
+      onBlur={(e) => onChange && onChange(e.currentTarget.textContent)}
+      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
+      style={style}>{value}</T>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Focus mode — overlay one artboard; ←/→ within section, ↑/↓ across
+// sections, Esc or backdrop click to exit.
+// ─────────────────────────────────────────────────────────────
+function DCFocusOverlay({ entry, sectionMeta, sectionOrder }) {
+  const ctx = React.useContext(DCCtx);
+  const { sectionId, artboard } = entry;
+  const sec = ctx.section(sectionId);
+  const meta = sectionMeta[sectionId];
+  const peers = meta.slotIds;
+  const aid = artboard.props.id ?? artboard.props.label;
+  const idx = peers.indexOf(aid);
+  const secIdx = sectionOrder.indexOf(sectionId);
+
+  const go = (d) => { const n = peers[(idx + d + peers.length) % peers.length]; if (n) ctx.setFocus(`${sectionId}/${n}`); };
+  const goSection = (d) => {
+    const ns = sectionOrder[(secIdx + d + sectionOrder.length) % sectionOrder.length];
+    const first = sectionMeta[ns] && sectionMeta[ns].slotIds[0];
+    if (first) ctx.setFocus(`${ns}/${first}`);
+  };
+
+  React.useEffect(() => {
+    const k = (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); goSection(-1); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); goSection(1); }
+    };
+    document.addEventListener('keydown', k);
+    return () => document.removeEventListener('keydown', k);
+  });
+
+  const { width = 260, height = 480, children } = artboard.props;
+  const [vp, setVp] = React.useState({ w: window.innerWidth, h: window.innerHeight });
+  React.useEffect(() => { const r = () => setVp({ w: window.innerWidth, h: window.innerHeight }); window.addEventListener('resize', r); return () => window.removeEventListener('resize', r); }, []);
+  const scale = Math.max(0.1, Math.min((vp.w - 200) / width, (vp.h - 260) / height, 2));
+
+  const [ddOpen, setDd] = React.useState(false);
+  const Arrow = ({ dir, onClick }) => (
+    <button onClick={(e) => { e.stopPropagation(); onClick(); }}
+      style={{ position: 'absolute', top: '50%', [dir]: 28, transform: 'translateY(-50%)',
+        border: 'none', background: 'rgba(255,255,255,.08)', color: 'rgba(255,255,255,.9)',
+        width: 44, height: 44, borderRadius: 22, fontSize: 18, cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .15s' }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.18)')}
+      onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.08)')}>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <path d={dir === 'left' ? 'M11 3L5 9l6 6' : 'M7 3l6 6-6 6'} /></svg>
+    </button>
+  );
+
+  // Portal to body so position:fixed is the real viewport regardless of any
+  // transform on DesignCanvas's ancestors (including the canvas zoom itself).
+  return ReactDOM.createPortal(
+    <div onClick={() => ctx.setFocus(null)}
+      onWheel={(e) => e.preventDefault()}
+      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(24,20,16,.6)', backdropFilter: 'blur(14px)',
+        fontFamily: DC.font, color: '#fff' }}>
+
+      {/* top bar: section dropdown (left) · close (right) */}
+      <div onClick={(e) => e.stopPropagation()}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 72, display: 'flex', alignItems: 'flex-start', padding: '16px 20px 0', gap: 16 }}>
+        <div style={{ position: 'relative' }}>
+          <button onClick={() => setDd((o) => !o)}
+            style={{ border: 'none', background: 'transparent', color: '#fff', cursor: 'pointer', padding: '6px 8px',
+              borderRadius: 6, textAlign: 'left', fontFamily: 'inherit' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 18, fontWeight: 600, letterSpacing: -0.3 }}>{meta.title}</span>
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" style={{ opacity: .7 }}><path d="M2 4l3.5 3.5L9 4"/></svg>
+            </span>
+            {meta.subtitle && <span style={{ display: 'block', fontSize: 13, opacity: .6, fontWeight: 400, marginTop: 2 }}>{meta.subtitle}</span>}
+          </button>
+          {ddOpen && (
+            <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, background: '#2a251f', borderRadius: 8,
+              boxShadow: '0 8px 32px rgba(0,0,0,.4)', padding: 4, minWidth: 200, zIndex: 10 }}>
+              {sectionOrder.map((sid) => (
+                <button key={sid} onClick={() => { setDd(false); const f = sectionMeta[sid].slotIds[0]; if (f) ctx.setFocus(`${sid}/${f}`); }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', border: 'none', cursor: 'pointer',
+                    background: sid === sectionId ? 'rgba(255,255,255,.1)' : 'transparent', color: '#fff',
+                    padding: '8px 12px', borderRadius: 5, fontSize: 14, fontWeight: sid === sectionId ? 600 : 400, fontFamily: 'inherit' }}>
+                  {sectionMeta[sid].title}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div style={{ flex: 1 }} />
+        <button onClick={() => ctx.setFocus(null)}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.12)')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          style={{ border: 'none', background: 'transparent', color: 'rgba(255,255,255,.7)', width: 32, height: 32,
+            borderRadius: 16, fontSize: 20, cursor: 'pointer', lineHeight: 1, transition: 'background .12s' }}>×</button>
+      </div>
+
+      {/* card centered, label + index below — only the card itself stops
+          propagation so any backdrop click (including the margins around
+          the card) exits focus */}
+      <div
+        style={{ position: 'absolute', top: 64, bottom: 56, left: 100, right: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <div onClick={(e) => e.stopPropagation()} style={{ width: width * scale, height: height * scale, position: 'relative' }}>
+          <div style={{ width, height, transform: `scale(${scale})`, transformOrigin: 'top left', background: '#fff', borderRadius: 2, overflow: 'hidden',
+            boxShadow: '0 20px 80px rgba(0,0,0,.4)' }}>
+            {children || <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb' }}>{aid}</div>}
+          </div>
+        </div>
+        <div onClick={(e) => e.stopPropagation()} style={{ fontSize: 14, fontWeight: 500, opacity: .85, textAlign: 'center' }}>
+          {(sec.labels || {})[aid] ?? artboard.props.label}
+          <span style={{ opacity: .5, marginLeft: 10, fontVariantNumeric: 'tabular-nums' }}>{idx + 1} / {peers.length}</span>
+        </div>
+      </div>
+
+      <Arrow dir="left" onClick={() => go(-1)} />
+      <Arrow dir="right" onClick={() => go(1)} />
+
+      {/* dots */}
+      <div onClick={(e) => e.stopPropagation()}
+        style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8 }}>
+        {peers.map((p, i) => (
+          <button key={p} onClick={() => ctx.setFocus(`${sectionId}/${p}`)}
+            style={{ border: 'none', padding: 0, cursor: 'pointer', width: 6, height: 6, borderRadius: 3,
+              background: i === idx ? '#fff' : 'rgba(255,255,255,.3)' }} />
+        ))}
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Post-it — absolute-positioned sticky note
+// ─────────────────────────────────────────────────────────────
+function DCPostIt({ children, top, left, right, bottom, rotate = -2, width = 180 }) {
+  return (
+    <div style={{
+      position: 'absolute', top, left, right, bottom, width,
+      background: DC.postitBg, padding: '14px 16px',
+      fontFamily: '"Comic Sans MS", "Marker Felt", "Segoe Print", cursive',
+      fontSize: 14, lineHeight: 1.4, color: DC.postitText,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)',
+      transform: `rotate(${rotate}deg)`,
+      zIndex: 5,
+    }}>{children}</div>
+  );
+}
+
+Object.assign(window, { DesignCanvas, DCSection, DCArtboard, DCPostIt });
+
+
+  </script>
+
+  <!-- ===== flow0-manifesto.jsx ===== -->
+  <script type="text/babel">
+// Design philosophy + system principles — first artboard
+// "Cəzalandırma deyil, fərqindəlik."
+
+function ManifestoBoard() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'oklch(0.20 0.02 35)', color: 'oklch(0.96 0.02 35)', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'grid', gridTemplateColumns: '1.4fr 1fr', overflow: 'hidden' }}>
+      <div style={{ padding: '64px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', borderRight: '1px solid oklch(0.30 0.04 35 / 0.6)' }}>
+        <div>
+          <div style={{ fontSize: 11.5, fontWeight: 800, letterSpacing: 2.4, color: 'oklch(0.78 0.18 35)', textTransform: 'uppercase' }}>Axın 0 · Sistem prinsipi</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 64, lineHeight: 1.02, letterSpacing: -2, fontWeight: 500, marginTop: 18 }}>
+            Cəzalandırma deyil,<br/>
+            <span style={{ fontStyle: 'italic', color: 'oklch(0.78 0.18 35)' }}>fərqindəlik.</span>
+          </div>
+          <div style={{ fontSize: 16, lineHeight: 1.55, color: 'oklch(0.85 0.04 35)', marginTop: 28, maxWidth: 540 }}>
+            Bu sistem əməkdaşı izləmək üçün deyil — özünə güzgü tutmaq üçündür.
+            Görünürlük güvən üzərindədir. Hər kəs öz ritmini görsün, özünü özü ilə müqayisə etsin.
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 28, marginTop: 56, fontSize: 12, color: 'oklch(0.78 0.04 35)' }}>
+          <span>Code Academy heritage</span>
+          <span>·</span>
+          <span>Azərbaycan dili</span>
+          <span>·</span>
+          <span>54 nəfər · 5 komanda</span>
+          <span>·</span>
+          <span>Aprel 2026</span>
+        </div>
+      </div>
+
+      <div style={{ padding: '64px 48px', display: 'flex', flexDirection: 'column', gap: 22 }}>
+        <div style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: 1.6, color: 'oklch(0.78 0.10 35)', textTransform: 'uppercase' }}>5 prinsip</div>
+        {[
+          ['01', 'Tək kanal', 'Bütün sorğular sistemdən keçir. CEO-ya birbaşa yazışma yox — manager + HR ilk növbədə görsün.'],
+          ['02', 'Üzrlü qaib qorunur', 'Xəstəlik / məzuniyyət streak-i qırmır. Sistem insan kimi başa düşür.'],
+          ['03', 'Görünürlük açıq, audit ilə', 'Hər kəs bilir kim hardadır — niyə yox. Hər hadisə audit log-undadır.'],
+          ['04', 'Mükafat ardıcıllığa', '"Ən erkən gələn" deyil, "öz ritmini saxlayan". Müqayisə özün-özünlədir.'],
+          ['05', 'Manager əlləşmir', 'Auto-təsdiq, smart default, 30 dəq cavab gözləməsi. HR yedək kimi durur.'],
+        ].map(([n, t, d]) => (
+          <div key={n} style={{ display: 'grid', gridTemplateColumns: '36px 1fr', gap: 14, paddingBottom: 18, borderBottom: '1px solid oklch(0.30 0.04 35 / 0.5)' }}>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 22, fontWeight: 500, color: 'oklch(0.78 0.18 35)', letterSpacing: -0.5 }}>{n}</div>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'oklch(0.96 0.02 35)' }}>{t}</div>
+              <div style={{ fontSize: 12.5, lineHeight: 1.55, color: 'oklch(0.78 0.04 35)', marginTop: 4 }}>{d}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SystemMapBoard() {
+  // Visual system map: who sees what, where data flows
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', padding: '40px 48px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.6, color: 'oklch(0.55 0.16 35)', textTransform: 'uppercase' }}>Sistem xəritəsi</div>
+        <div style={{ fontFamily: '"Fraunces", serif', fontSize: 36, lineHeight: 1.08, letterSpacing: -0.8, fontWeight: 500, marginTop: 6 }}>3 rol · 1 mənbə · sıfır siyasət ziddiyyəti</div>
+      </div>
+
+      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 18 }}>
+        {[
+          {
+            role: 'Əməkdaş',
+            color: 'oklch(0.50 0.12 240)',
+            bg: 'oklch(0.96 0.03 240)',
+            sees: ['Öz check-in/out', 'Şəxsi tarixçə', 'Komanda statusu (yer)', 'Öz weekly wrap', 'Mükafatlar', 'Kudos'],
+            does: ['Check-in (Wi-Fi/GPS/manual)', 'Sorğu göndər', 'Kudos ver/al', 'Mükafat seç'],
+          },
+          {
+            role: 'Manager',
+            color: 'oklch(0.50 0.14 320)',
+            bg: 'oklch(0.96 0.03 320)',
+            sees: ['Bütün əməkdaş', 'Komanda canlı statusu', 'Komanda performansı', 'Açıq sorğular', 'Diqqət siqnalları'],
+            does: ['Sorğu təsdiq/rədd', 'Spotlight elan', '1-on-1 qeyd', 'Komanda OKR yenilə'],
+          },
+          {
+            role: 'HR / Admin',
+            color: 'oklch(0.55 0.16 35)',
+            bg: 'oklch(0.96 0.04 35)',
+            sees: ['Bütün şirkət', 'Audit log', 'Siyasət konfiqurasiyası', 'Hesabatlar / export', 'Tendensiyalar'],
+            does: ['Siyasət dəyiş', 'Mükafat fond idarə', 'Aylıq report', 'Yeni qoşulan onboard'],
+          },
+        ].map(p => (
+          <div key={p.role} style={{ background: 'white', border: `1.5px solid ${p.color}`, borderRadius: 16, padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontFamily: '"Fraunces", serif', fontSize: 22, fontWeight: 600, letterSpacing: -0.3 }}>{p.role}</div>
+              <div style={{ width: 14, height: 14, background: p.color, borderRadius: 4 }}/>
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Görür</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                {p.sees.map(s => <div key={s} style={{ fontSize: 12.5, color: '#1a1410' }}>· {s}</div>)}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Edir</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                {p.does.map(s => <div key={s} style={{ fontSize: 12.5, color: '#1a1410' }}>· {s}</div>)}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 18, padding: '14px 18px', background: 'oklch(0.20 0.02 35)', color: 'oklch(0.96 0.02 35)', borderRadius: 12, fontSize: 13, lineHeight: 1.5, display: 'flex', gap: 14, alignItems: 'center' }}>
+        <div style={{ fontSize: 22 }}>↻</div>
+        <div><b>Tək mənbə:</b> hər üç rol eyni məlumat axınını fərqli linzalarla görür. HR siyasət yenilədikdə, sabah səhər manager və əməkdaş eyni qaydanı görür — sənəd yeniləməsinə ehtiyac yoxdur.</div>
+      </div>
+    </div>
+  );
+}
+
+function ColorTypeBoard() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', padding: '40px 48px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.6, color: 'oklch(0.55 0.16 35)', textTransform: 'uppercase' }}>Vizual sistem</div>
+        <div style={{ fontFamily: '"Fraunces", serif', fontSize: 36, lineHeight: 1.08, letterSpacing: -0.8, fontWeight: 500, marginTop: 6 }}>İsti, sakit, professional</div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 24, flex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Aksent paleti — OKLCH</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
+            {[
+              ['Coral',  'oklch(0.65 0.18 35)',  'Brand'],
+              ['Sage',   'oklch(0.62 0.13 155)', 'Office'],
+              ['Dusk',   'oklch(0.60 0.14 240)', 'Remote'],
+              ['Plum',   'oklch(0.60 0.16 320)', 'Meeting'],
+              ['Amber',  'oklch(0.72 0.16 75)',  'Sick'],
+              ['Taupe',  'oklch(0.55 0.03 60)',  'Off'],
+            ].map(([n, c, role]) => (
+              <div key={n}>
+                <div style={{ height: 88, background: c, borderRadius: 10, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)' }}/>
+                <div style={{ fontSize: 12, fontWeight: 700, marginTop: 8 }}>{n}</div>
+                <div style={{ fontSize: 10.5, color: 'oklch(0.5 0.02 60)' }}>{role}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 8 }}>Status indikatorlari</div>
+          <div style={{ background: 'white', borderRadius: 12, padding: 16, border: '1px solid oklch(0.92 0.01 60)', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            {['office', 'remote', 'meeting', 'field', 'break', 'off', 'sick', 'notyet'].map(s => (
+              <window.StatusChip key={s} status={s}/>
+            ))}
+          </div>
+
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 8 }}>Streak ikonografiyası</div>
+          <div style={{ background: 'white', borderRadius: 12, padding: 16, border: '1px solid oklch(0.92 0.01 60)', display: 'flex', justifyContent: 'space-between' }}>
+            {[3, 9, 18, 35, 70].map(n => {
+              const i = window.streakIntensity(n);
+              return (
+                <div key={n} style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 28, color: i.color }}>{i.glyph}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, marginTop: 4 }}>{n} gün</div>
+                  <div style={{ fontSize: 10, color: 'oklch(0.5 0.02 60)' }}>{i.label}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Tipoqrafiya</div>
+          <div style={{ background: 'white', borderRadius: 14, padding: 20, border: '1px solid oklch(0.92 0.01 60)', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <div style={{ fontSize: 10, color: 'oklch(0.5 0.02 60)', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>Display · Fraunces</div>
+              <div style={{ fontFamily: '"Fraunces", serif', fontSize: 38, lineHeight: 1.05, letterSpacing: -0.8, fontWeight: 500 }}>Sabah hardasan?</div>
+              <div style={{ fontFamily: '"Fraunces", serif', fontSize: 22, lineHeight: 1.1, fontStyle: 'italic', color: 'oklch(0.55 0.16 35)' }}>fərqindəlik</div>
+            </div>
+            <div style={{ height: 1, background: 'oklch(0.94 0.01 60)' }}/>
+            <div>
+              <div style={{ fontSize: 10, color: 'oklch(0.5 0.02 60)', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>Mətn · Plus Jakarta Sans</div>
+              <div style={{ fontSize: 15, lineHeight: 1.55 }}>Bu sistem əməkdaşı izləmək üçün deyil — özünə güzgü tutmaq üçündür.</div>
+              <div style={{ fontSize: 12, lineHeight: 1.55, color: 'oklch(0.5 0.02 60)', marginTop: 8 }}>İkinci dərəcəli mətn, izahatlar və meta məlumatlar üçün.</div>
+            </div>
+            <div style={{ height: 1, background: 'oklch(0.94 0.01 60)' }}/>
+            <div>
+              <div style={{ fontSize: 10, color: 'oklch(0.5 0.02 60)', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>Rəqəm · JetBrains Mono</div>
+              <div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 18 }}>09:14 · 38.5 saat · 23 gün</div>
+            </div>
+          </div>
+
+          <div style={{ background: 'oklch(0.20 0.02 35)', color: 'oklch(0.96 0.02 35)', borderRadius: 14, padding: 20, marginTop: 'auto' }}>
+            <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.78 0.10 35)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Avoid</div>
+            <div style={{ fontSize: 13, lineHeight: 1.55, marginTop: 8, opacity: 0.85 }}>
+              · Sürveylyans hissi yaradan qırmızı/yaşıl işıqlar<br/>
+              · "Geç qalma" siqnalları kimi kədərli ikon<br/>
+              · Aqressiv gradient backgroundlar<br/>
+              · Sıralama tablolari (kim ən vaxtında gəlir)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+window.ManifestoBoard = ManifestoBoard;
+window.SystemMapBoard = SystemMapBoard;
+window.ColorTypeBoard = ColorTypeBoard;
+
+  </script>
+
+  <!-- ===== flow1-checkin.jsx ===== -->
+  <script type="text/babel">
+// Flow 1 — Employee mobile check-in
+// 4 screens: morning gate · auto-detect · manual select · success/profile preview
+// Friendly tone, not surveillance. GPS/Wi-Fi shown as transparent signals.
+
+const PHONE_W = 390;
+const PHONE_H = 844;
+
+function PhoneShell({ children, time = '09:14', bg = '#f5f1ea' }) {
+  return (
+    <div style={{
+      width: PHONE_W, height: PHONE_H, background: bg,
+      fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
+      color: '#1a1410', overflow: 'hidden', position: 'relative',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      {/* status bar */}
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, fontWeight: 700, color: '#1a1410' }}>
+        <span>{time}</span>
+        <span style={{ display: 'flex', gap: 4, alignItems: 'center', fontSize: 11 }}>
+          <span>●●●</span><span>5G</span><span>▮▮▮▮</span>
+        </span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// Screen 1: Morning gate — first open of the day, 09:14
+function EmployeeMorningGate() {
+  return (
+    <PhoneShell time="09:14">
+      <div style={{ flex: 1, padding: '12px 22px 28px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 1.4, color: 'oklch(0.5 0.02 60)', textTransform: 'uppercase' }}>Şənbə · 26 Aprel</div>
+          <window.Avatar name="Mələk Tağıyeva" size={32} />
+        </div>
+
+        <div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 32, lineHeight: 1.1, letterSpacing: -0.8, fontWeight: 500, color: '#1a1410' }}>
+            Sabahın xeyir,<br/>Mələk.
+          </div>
+          <div style={{ fontSize: 14, color: 'oklch(0.45 0.02 60)', marginTop: 6 }}>Bu gün necə işləyirsən?</div>
+        </div>
+
+        {/* Auto-detected card */}
+        <div style={{ background: 'white', borderRadius: 18, padding: 18, border: '1px solid oklch(0.92 0.01 60)', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <window.Icon.Wifi s={16} c="oklch(0.50 0.12 240)"/>
+            <div style={{ fontSize: 11.5, fontWeight: 700, color: 'oklch(0.50 0.12 240)', letterSpacing: 0.6, textTransform: 'uppercase' }}>Avtomatik aşkarlandı</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.4 }}>Mərkəzi ofisdəsən</div>
+            <div style={{ fontSize: 13, color: 'oklch(0.5 0.02 60)', marginTop: 2 }}>Wi-Fi: <b style={{ color: '#1a1410' }}>company-hq</b> · GPS təsdiqlədi</div>
+          </div>
+          <button style={{ background: '#1a1410', color: 'white', padding: '14px 16px', borderRadius: 12, fontSize: 15, fontWeight: 700, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>Ofisdə kimi check-in et</span>
+            <window.Icon.ArrowR s={16}/>
+          </button>
+          <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', textAlign: 'center' }}>Yox, başqa yerdəyəm →</div>
+        </div>
+
+        {/* Today preview */}
+        <div style={{ background: 'oklch(0.96 0.04 35)', borderRadius: 14, padding: 14, border: '1px solid oklch(0.90 0.04 35)' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'oklch(0.55 0.16 35)', letterSpacing: 0.6, textTransform: 'uppercase', marginBottom: 6 }}>Bu gün səni gözləyir</div>
+          <div style={{ fontSize: 13, lineHeight: 1.5, color: '#1a1410' }}>
+            <b>2 görüş</b> · 11:00 dizayn sync · 15:00 1-on-1 Rəşadla<br/>
+            <b>3 fokus saatı</b> bloklanıb · 13:30-dan sonra
+          </div>
+        </div>
+
+        {/* Streak ribbon */}
+        <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 10, padding: 12, background: 'white', borderRadius: 12, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'oklch(0.96 0.04 35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: 'oklch(0.65 0.18 35)' }}>◆</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 700 }}>19 gün ritm</div>
+            <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)' }}>11 gün sonra <b>30 gün davam</b> nişanı açılır</div>
+          </div>
+        </div>
+      </div>
+    </PhoneShell>
+  );
+}
+
+// Screen 2: Manual select — "I'm somewhere else"
+function EmployeeManualSelect() {
+  const opts = [
+    { key: 'remote', icon: '⌂', label: 'Uzaqdan / evdən', desc: 'GPS təsdiqi tələb olunur', accent: 'oklch(0.50 0.12 240)' },
+    { key: 'field',  icon: '◇', label: 'Müştəri / sahə',  desc: 'Görüş və ya səfər',         accent: 'oklch(0.50 0.14 320)' },
+    { key: 'sick',   icon: '+', label: 'Xəstəlik',        desc: 'Bu günü dincəlmək lazımdır', accent: 'oklch(0.55 0.15 75)' },
+    { key: 'short',  icon: '◔', label: 'Qısa icazə',      desc: 'Bir neçə saatlıq',          accent: 'oklch(0.45 0.02 60)' },
+  ];
+  return (
+    <PhoneShell time="09:18">
+      <div style={{ flex: 1, padding: '12px 22px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button style={{ width: 32, height: 32, borderRadius: 10, background: 'white', border: '1px solid oklch(0.92 0.01 60)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+            <window.Icon.ChevronR s={14} c="#1a1410" /><span style={{ display: 'inline-block', transform: 'rotate(180deg)', display: 'none' }}/>
+          </button>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'oklch(0.45 0.02 60)' }}>Geri</div>
+        </div>
+
+        <div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 26, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500 }}>
+            Bu gün hardasan?
+          </div>
+          <div style={{ fontSize: 13, color: 'oklch(0.45 0.02 60)', marginTop: 4 }}>Hamı görsün ki, niyə cavab vermirsən — və ya verirsən.</div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {opts.map((o, i) => (
+            <div key={o.key} style={{
+              background: 'white', borderRadius: 14, padding: 14,
+              border: i === 0 ? `1.5px solid ${o.accent}` : '1px solid oklch(0.92 0.01 60)',
+              display: 'flex', alignItems: 'center', gap: 12,
+            }}>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: `color-mix(in oklch, ${o.accent} 12%, white)`, color: o.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 600 }}>
+                {o.icon}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14.5, fontWeight: 700 }}>{o.label}</div>
+                <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)' }}>{o.desc}</div>
+              </div>
+              {i === 0 && (
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: o.accent, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <window.Icon.Check s={12} c="white"/>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', padding: '10px 14px', background: 'oklch(0.96 0.03 240)', borderRadius: 10, lineHeight: 1.5, border: '1px solid oklch(0.90 0.03 240)' }}>
+            <b style={{ color: 'oklch(0.40 0.12 240)' }}>Bilirsən?</b> Uzaqdan işləmək üçün manager-ə avtomatik bildiriş gedəcək — icazə əvvəlcədən razılaşdırılıbsa, sadəcə qeyd kimi.
+          </div>
+          <button style={{ background: '#1a1410', color: 'white', padding: '14px 16px', borderRadius: 12, fontSize: 15, fontWeight: 700, border: 'none' }}>
+            Davam et — Uzaqdan
+          </button>
+        </div>
+      </div>
+    </PhoneShell>
+  );
+}
+
+// Screen 3: Remote check-in confirmation w/ GPS reveal
+function EmployeeRemoteConfirm() {
+  return (
+    <PhoneShell time="09:20">
+      <div style={{ flex: 1, padding: '12px 22px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 1.4, color: 'oklch(0.50 0.12 240)', textTransform: 'uppercase' }}>Uzaqdan check-in</div>
+
+        <div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 26, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500 }}>
+            GPS-i bir dəfə yoxlayaq.
+          </div>
+          <div style={{ fontSize: 13, color: 'oklch(0.45 0.02 60)', marginTop: 4 }}>Yalnız təsdiqdir — sonra izləmə yoxdur.</div>
+        </div>
+
+        {/* GPS preview tile */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 14, border: '1px solid oklch(0.92 0.01 60)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ height: 140, borderRadius: 12, background: 'linear-gradient(135deg, oklch(0.94 0.03 240), oklch(0.92 0.04 200))', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(90deg, transparent 0 26px, oklch(0.85 0.02 240 / 0.4) 26px 27px), repeating-linear-gradient(0deg, transparent 0 26px, oklch(0.85 0.02 240 / 0.4) 26px 27px)' }}/>
+            <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 60, height: 60, borderRadius: '50%', background: 'oklch(0.50 0.12 240 / 0.18)' }}/>
+            <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 14, height: 14, borderRadius: '50%', background: 'oklch(0.50 0.12 240)', boxShadow: '0 0 0 4px white' }}/>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <window.Icon.Pin s={14} c="oklch(0.50 0.12 240)"/>
+            <div style={{ fontSize: 13 }}><b>Yasamal r.</b> · təxmini 200m diqqət</div>
+          </div>
+          <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', lineHeight: 1.5, padding: '10px 12px', background: 'oklch(0.97 0.01 60)', borderRadius: 8 }}>
+            Dəqiq ünvan saxlanmır. Yalnız <b>"ofis xaricindədir"</b> bayrağı qeyd olunur.
+          </div>
+        </div>
+
+        {/* Note to manager */}
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'oklch(0.5 0.02 60)', letterSpacing: 0.6, textTransform: 'uppercase', marginBottom: 6 }}>Manager-ə qeyd · ixtiyari</div>
+          <div style={{ fontSize: 13, color: '#1a1410', lineHeight: 1.5, minHeight: 38 }}>
+            <span style={{ color: 'oklch(0.5 0.02 60)' }}>Konsentrasiya tələb edən dizayn işi var — sabaha presentation hazırlayıram.</span>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <button style={{ background: 'oklch(0.50 0.12 240)', color: 'white', padding: '14px 16px', borderRadius: 12, fontSize: 15, fontWeight: 700, border: 'none' }}>
+            Uzaqdan başla
+          </button>
+          <button style={{ background: 'transparent', color: '#1a1410', padding: 12, fontSize: 13, fontWeight: 600, border: 'none' }}>
+            Geri qayıt
+          </button>
+        </div>
+      </div>
+    </PhoneShell>
+  );
+}
+
+// Screen 4: Success — checked in, day starts
+function EmployeeCheckinSuccess() {
+  return (
+    <PhoneShell time="09:21" bg="#f5f1ea">
+      <div style={{ flex: 1, padding: '12px 22px 28px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+        {/* Hero */}
+        <div style={{ background: 'oklch(0.94 0.05 240)', borderRadius: 20, padding: 20, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', right: -30, top: -30, width: 140, height: 140, borderRadius: '50%', background: 'oklch(0.85 0.10 240 / 0.4)' }}/>
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.40 0.14 240)', textTransform: 'uppercase' }}>Günün başladı</div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 30, lineHeight: 1.1, letterSpacing: -0.6, fontWeight: 500, color: '#0d1730', marginTop: 6 }}>
+              Uzaqdan, 09:20.
+            </div>
+            <div style={{ fontSize: 13, color: 'oklch(0.40 0.10 240)', marginTop: 4 }}>Rəşada bildiriş getdi. Diqqətli iş!</div>
+          </div>
+        </div>
+
+        {/* Streak update */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 16, border: '1px solid oklch(0.92 0.01 60)', display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 56, height: 56, borderRadius: 14, background: 'linear-gradient(135deg, oklch(0.96 0.04 35), oklch(0.94 0.06 50))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: 'oklch(0.65 0.18 35)' }}>◆</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 17, fontWeight: 700, letterSpacing: -0.2 }}>20 gün ritm</div>
+            <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)', marginTop: 2 }}>+1 bu gün üçün · vaxtında check-in</div>
+          </div>
+        </div>
+
+        {/* Day at a glance */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 16, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.5 0.02 60)', textTransform: 'uppercase', marginBottom: 10 }}>Bu gün ritmin</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <DayRow time="09:20" label="Uzaqdan başladı" tone="oklch(0.50 0.12 240)" active/>
+            <DayRow time="11:00" label="Dizayn sync · 30dəq" tone="oklch(0.50 0.14 320)"/>
+            <DayRow time="13:30" label="Fokus bloku · 2 saat" tone="oklch(0.55 0.16 35)"/>
+            <DayRow time="15:00" label="1-on-1 Rəşadla · 45dəq" tone="oklch(0.50 0.14 320)"/>
+            <DayRow time="18:00" label="Çıxış" tone="oklch(0.45 0.02 60)" muted/>
+          </div>
+        </div>
+
+        {/* Mood check */}
+        <div style={{ background: 'oklch(0.96 0.03 35)', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.04 35)' }}>
+          <div style={{ fontSize: 12.5, lineHeight: 1.5 }}>
+            <b>Bugün necə hiss edirsən?</b> <span style={{ color: 'oklch(0.5 0.02 60)' }}>1 sual · ixtiyari · yalnız sən görürsən</span>
+          </div>
+          <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+            {['🌫', '◐', '◑', '◉', '✦'].map((g, i) => (
+              <div key={i} style={{ flex: 1, padding: '10px 0', textAlign: 'center', background: 'white', borderRadius: 10, fontSize: 18, border: '1px solid oklch(0.92 0.01 60)' }}>{g}</div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: 'oklch(0.5 0.02 60)', marginTop: 6, padding: '0 4px' }}>
+            <span>yorğun</span><span>odaqlı</span>
+          </div>
+        </div>
+      </div>
+    </PhoneShell>
+  );
+}
+
+function DayRow({ time, label, tone, active, muted }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, opacity: muted ? 0.5 : 1 }}>
+      <div style={{ width: 8, height: 8, borderRadius: '50%', background: active ? tone : 'transparent', border: active ? 'none' : `1.5px solid ${tone}` }}/>
+      <div style={{ fontSize: 11.5, color: 'oklch(0.45 0.02 60)', fontFamily: '"JetBrains Mono", monospace', width: 44 }}>{time}</div>
+      <div style={{ fontSize: 13, color: '#1a1410', fontWeight: active ? 600 : 500 }}>{label}</div>
+    </div>
+  );
+}
+
+window.EmployeeMorningGate = EmployeeMorningGate;
+window.EmployeeManualSelect = EmployeeManualSelect;
+window.EmployeeRemoteConfirm = EmployeeRemoteConfirm;
+window.EmployeeCheckinSuccess = EmployeeCheckinSuccess;
+
+  </script>
+
+  <!-- ===== flow2-personal.jsx ===== -->
+  <script type="text/babel">
+// Flow 2 — Employee personal dashboard
+// Self-awareness: own data, own trends. No comparison with colleagues.
+// Sections: hero status · this week rhythm · streak/badges · weekly wrap · kudos received · my rewards
+
+const PHONE_W2 = 390;
+const PHONE_H2 = 844;
+
+function PhoneShell2({ children, time = '14:32' }) {
+  return (
+    <div style={{
+      width: PHONE_W2, height: PHONE_H2, background: '#f5f1ea',
+      fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
+      color: '#1a1410', overflow: 'hidden', position: 'relative',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, fontWeight: 700 }}>
+        <span>{time}</span>
+        <span style={{ display: 'flex', gap: 4, alignItems: 'center', fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// Screen: Personal dashboard — top of "Mən" tab
+function EmployeePersonalDashboard() {
+  return (
+    <PhoneShell2 time="14:32">
+      <div style={{ flex: 1, padding: '6px 22px 100px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 1.4, color: 'oklch(0.5 0.02 60)', textTransform: 'uppercase' }}>Mənim ritmim</div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 24, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500, marginTop: 2 }}>Mələk Tağıyeva</div>
+          </div>
+          <window.Avatar name="Mələk Tağıyeva" size={42}/>
+        </div>
+
+        {/* Hero — current status */}
+        <div style={{ background: 'white', borderRadius: 18, padding: 16, border: '1px solid oklch(0.92 0.01 60)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <window.StatusChip status="remote"/>
+            <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', fontFamily: '"JetBrains Mono", monospace' }}>09:20 → indi</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 38, fontWeight: 600, letterSpacing: -1, color: '#1a1410' }}>5s 12dəq</div>
+            <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)' }}>bu gün</div>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ flex: 1, padding: '8px 10px', background: 'oklch(0.96 0.04 35)', borderRadius: 10 }}>
+              <div style={{ fontSize: 10.5, color: 'oklch(0.55 0.16 35)', fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase' }}>Fokus</div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>3s 20dəq</div>
+            </div>
+            <div style={{ flex: 1, padding: '8px 10px', background: 'oklch(0.96 0.03 320)', borderRadius: 10 }}>
+              <div style={{ fontSize: 10.5, color: 'oklch(0.50 0.14 320)', fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase' }}>Görüş</div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>1s 10dəq</div>
+            </div>
+            <div style={{ flex: 1, padding: '8px 10px', background: 'oklch(0.96 0.01 60)', borderRadius: 10 }}>
+              <div style={{ fontSize: 10.5, color: 'oklch(0.45 0.02 60)', fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase' }}>Fasilə</div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>42 dəq</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Streak */}
+        <div style={{ background: 'linear-gradient(135deg, oklch(0.96 0.05 35), oklch(0.94 0.06 50))', borderRadius: 18, padding: 18, border: '1px solid oklch(0.90 0.06 35)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', right: -20, bottom: -20, fontSize: 120, color: 'oklch(0.65 0.18 35 / 0.12)', lineHeight: 1 }}>◆</div>
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: 'oklch(0.55 0.16 35)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Davamlı ritm</div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 56, lineHeight: 1, letterSpacing: -2, fontWeight: 600, color: '#5a2510', marginTop: 6 }}>20</div>
+            <div style={{ fontSize: 13, color: 'oklch(0.50 0.10 35)', marginTop: 2 }}>gün ardıcıl vaxtında</div>
+            {/* Mini bars — last 14 days */}
+            <div style={{ display: 'flex', gap: 3, marginTop: 14, alignItems: 'flex-end', height: 32 }}>
+              {[8,9,7,9,8,2,2,9,8,9,7,9,8,9].map((h, i) => (
+                <div key={i} style={{
+                  flex: 1, height: `${h * 10}%`, minHeight: 4,
+                  background: i < 5 || i > 6 ? 'oklch(0.65 0.18 35)' : 'oklch(0.85 0.04 35)',
+                  borderRadius: 2,
+                }}/>
+              ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'oklch(0.50 0.10 35)', marginTop: 4 }}>
+              <span>2 həftə əvvəl</span><span>bu gün</span>
+            </div>
+            <div style={{ marginTop: 10, fontSize: 12, color: 'oklch(0.45 0.10 35)' }}>10 gün sonra <b style={{ color: '#5a2510' }}>30 gün davam</b> nişanı açılır →</div>
+          </div>
+        </div>
+
+        {/* Rewards card */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 16, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Mükafatlarım</div>
+            <div style={{ fontSize: 11, color: 'oklch(0.55 0.16 35)', fontWeight: 700 }}>3 hazır →</div>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <RewardChip icon="☕" label="Qəhvə kuponu" sub="7 gün ritm" ready/>
+            <RewardChip icon="📖" label="Kitab seçimi" sub="14 gün ritm" ready/>
+            <RewardChip icon="🌿" label="+1 gün məz." sub="60 gün ritm" locked progress={20/60}/>
+          </div>
+        </div>
+
+        {/* Recent kudos */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 16, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Bu həftə təşəkkürlər</div>
+            <div style={{ fontSize: 11, color: 'oklch(0.50 0.14 320)', fontWeight: 700 }}>2 yeni</div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <KudoRow from="Cavid Hüseynov" tag="Komanda dayağı" text="Spec-imi yoxlayıb 3 yeri göstərdin — vaxtımı qoruyub saxladın." color="oklch(0.50 0.14 320)"/>
+            <KudoRow from="Rəşad Quliyev" tag="Yaradıcılıq" text="Onboarding flow-undakı detallar fərq yaratdı." color="oklch(0.55 0.16 35)"/>
+          </div>
+        </div>
+      </div>
+    </PhoneShell2>
+  );
+}
+
+function RewardChip({ icon, label, sub, ready, locked, progress }) {
+  return (
+    <div style={{
+      flex: 1, padding: 10, borderRadius: 12,
+      background: ready ? 'oklch(0.96 0.04 35)' : 'oklch(0.96 0.01 60)',
+      border: `1px solid ${ready ? 'oklch(0.88 0.06 35)' : 'oklch(0.92 0.01 60)'}`,
+      opacity: locked ? 0.7 : 1, position: 'relative',
+    }}>
+      <div style={{ fontSize: 22, lineHeight: 1 }}>{icon}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, marginTop: 6, lineHeight: 1.2 }}>{label}</div>
+      <div style={{ fontSize: 9.5, color: 'oklch(0.5 0.02 60)', marginTop: 2 }}>{sub}</div>
+      {locked && progress != null && (
+        <div style={{ marginTop: 6, height: 3, background: 'oklch(0.90 0.01 60)', borderRadius: 2 }}>
+          <div style={{ width: `${progress * 100}%`, height: '100%', background: 'oklch(0.65 0.18 35)', borderRadius: 2 }}/>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function KudoRow({ from, tag, text, color }) {
+  return (
+    <div style={{ display: 'flex', gap: 10 }}>
+      <window.Avatar name={from} size={28}/>
+      <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+          <div style={{ fontSize: 12.5, fontWeight: 700 }}>{from}</div>
+          <div style={{ fontSize: 9.5, padding: '2px 6px', borderRadius: 4, background: `color-mix(in oklch, ${color} 12%, white)`, color, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase' }}>{tag}</div>
+        </div>
+        <div style={{ fontSize: 12, color: '#1a1410', lineHeight: 1.5 }}>{text}</div>
+      </div>
+    </div>
+  );
+}
+
+// Screen: Weekly Wrap — Spotify Wrapped style
+function EmployeeWeeklyWrap() {
+  return (
+    <PhoneShell2 time="17:48">
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 1.4, color: 'oklch(0.55 0.16 35)', textTransform: 'uppercase' }}>Həftəlik xülasə · 20-26 Apr</div>
+
+        <div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 30, lineHeight: 1.1, letterSpacing: -0.7, fontWeight: 500 }}>
+            Bu həftə sənin<br/><span style={{ color: 'oklch(0.55 0.16 35)' }}>odaqlı həftən</span> oldu.
+          </div>
+          <div style={{ fontSize: 13, color: 'oklch(0.45 0.02 60)', marginTop: 6, lineHeight: 1.5 }}>5 gün işlədin · 38.5 saat · keçən həftədən +1.5 saat</div>
+        </div>
+
+        {/* Big stat */}
+        <div style={{ background: 'linear-gradient(135deg, oklch(0.20 0.04 35), oklch(0.22 0.06 50))', borderRadius: 18, padding: 20, color: 'oklch(0.96 0.02 35)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', right: -10, top: -10, fontSize: 90, color: 'oklch(0.45 0.16 35 / 0.4)', lineHeight: 1 }}>✦</div>
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: 1.2, textTransform: 'uppercase', opacity: 0.7 }}>Ən uzun fokus</div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 44, lineHeight: 1, letterSpacing: -1.5, fontWeight: 500, marginTop: 8 }}>4s 05dəq</div>
+            <div style={{ fontSize: 12.5, opacity: 0.8, marginTop: 6 }}>Çərşənbə günü, fasiləsiz · onboarding flow üzərində</div>
+          </div>
+        </div>
+
+        {/* Mini grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <WrapTile label="Ən erkən gəliş" value="08:14" sub="Salı" tone="oklch(0.50 0.10 155)"/>
+          <WrapTile label="Vaxtında" value="4/5" sub="gün" tone="oklch(0.55 0.16 35)"/>
+          <WrapTile label="Görüş" value="6s 30" sub="ümumi" tone="oklch(0.50 0.14 320)"/>
+          <WrapTile label="Fokus blok" value="11" sub="bitirildi" tone="oklch(0.50 0.12 240)"/>
+        </div>
+
+        {/* Mood */}
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Hisslərin</div>
+          <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 40, marginBottom: 4 }}>
+            {[3,4,4,5,4].map((m,i) => (
+              <div key={i} style={{ flex: 1, height: `${m * 20}%`, background: 'oklch(0.65 0.16 50)', borderRadius: 3 }}/>
+            ))}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'oklch(0.5 0.02 60)' }}>
+            <span>Be</span><span>Çə</span><span>Ç.A</span><span>Cü</span><span>C.A</span>
+          </div>
+          <div style={{ fontSize: 12, color: '#1a1410', marginTop: 10, lineHeight: 1.5 }}>
+            <b>Ən odaqlı:</b> Çərşənbə · <b>Ən yorğun:</b> Bazar ertəsi səhəri
+          </div>
+        </div>
+
+        {/* Reward earned */}
+        <div style={{ background: 'oklch(0.96 0.04 35)', borderRadius: 14, padding: 14, border: '1.5px solid oklch(0.65 0.18 35)', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>☕</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.55 0.16 35)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Bu həftəki mükafatın</div>
+            <div style={{ fontSize: 14, fontWeight: 700, marginTop: 2 }}>Qəhvə kuponu açıldı</div>
+            <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)' }}>Mükafatlar bölməsində götür →</div>
+          </div>
+        </div>
+      </div>
+    </PhoneShell2>
+  );
+}
+
+function WrapTile({ label, value, sub, tone }) {
+  return (
+    <div style={{ background: 'white', borderRadius: 14, padding: 12, border: '1px solid oklch(0.92 0.01 60)' }}>
+      <div style={{ fontSize: 10, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.1, textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ fontFamily: '"Fraunces", serif', fontSize: 24, fontWeight: 600, letterSpacing: -0.6, color: tone, marginTop: 4, lineHeight: 1 }}>{value}</div>
+      <div style={{ fontSize: 11, color: 'oklch(0.5 0.02 60)', marginTop: 2 }}>{sub}</div>
+    </div>
+  );
+}
+
+// Screen: Badges & milestones
+function EmployeeBadges() {
+  const badges = window.BADGES || [];
+  return (
+    <PhoneShell2 time="14:35">
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'auto' }}>
+        <div>
+          <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 1.4, color: 'oklch(0.5 0.02 60)', textTransform: 'uppercase' }}>Nişanlarım</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 26, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500, marginTop: 4 }}>4 açılıb · 2 yolda</div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {badges.map(b => (
+            <div key={b.id} style={{
+              padding: 14, borderRadius: 14,
+              background: b.unlocked ? 'white' : 'oklch(0.96 0.01 60)',
+              border: b.unlocked ? '1px solid oklch(0.92 0.01 60)' : '1px dashed oklch(0.85 0.01 60)',
+              opacity: b.unlocked ? 1 : 0.55,
+              display: 'flex', flexDirection: 'column', gap: 4,
+            }}>
+              <div style={{ fontSize: 28, lineHeight: 1, color: b.unlocked ? 'oklch(0.55 0.16 35)' : 'oklch(0.6 0 0)' }}>{b.icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, marginTop: 6 }}>{b.name}</div>
+              <div style={{ fontSize: 11, color: 'oklch(0.5 0.02 60)', lineHeight: 1.4 }}>{b.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background: 'oklch(0.96 0.03 240)', borderRadius: 12, padding: 14, border: '1px solid oklch(0.90 0.03 240)', fontSize: 12, lineHeight: 1.5, color: 'oklch(0.30 0.10 240)' }}>
+          <b>Niyə nişanlar?</b> Cəzalandırma deyil, qeyd. Sənin öz ritmini görəsən və zaman keçdikcə özünlə müqayisə edəsən.
+        </div>
+      </div>
+    </PhoneShell2>
+  );
+}
+
+window.EmployeePersonalDashboard = EmployeePersonalDashboard;
+window.EmployeeWeeklyWrap = EmployeeWeeklyWrap;
+window.EmployeeBadges = EmployeeBadges;
+
+  </script>
+
+  <!-- ===== flow3-request.jsx ===== -->
+  <script type="text/babel">
+// Flow 3 — Remote/leave request flow
+// Single channel: no CEO-DM bypass. HR sees everything.
+
+function RequestForm() {
+  return (
+    <div style={{ width: 390, height: 844, background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700 }}>
+        <span>10:24</span><span style={{ fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'auto' }}>
+        <div>
+          <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 1.4, color: 'oklch(0.50 0.12 240)', textTransform: 'uppercase' }}>Yeni sorğu</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 26, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500, marginTop: 4 }}>Nə üçün icazə?</div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          {[
+            { k: 'remote', icon: '⌂', label: 'Uzaqdan iş', sel: true,  c: 'oklch(0.50 0.12 240)' },
+            { k: 'leave',  icon: '○', label: 'Məzuniyyət', sel: false, c: 'oklch(0.45 0.02 60)' },
+            { k: 'sick',   icon: '+', label: 'Xəstəlik',   sel: false, c: 'oklch(0.55 0.15 75)' },
+            { k: 'short',  icon: '◔', label: 'Qısa icazə', sel: false, c: 'oklch(0.45 0.02 60)' },
+          ].map(o => (
+            <div key={o.k} style={{
+              padding: 14, borderRadius: 12,
+              background: o.sel ? 'color-mix(in oklch, ' + o.c + ' 8%, white)' : 'white',
+              border: o.sel ? `1.5px solid ${o.c}` : '1px solid oklch(0.92 0.01 60)',
+              display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start',
+            }}>
+              <div style={{ width: 32, height: 32, borderRadius: 9, background: `color-mix(in oklch, ${o.c} 12%, white)`, color: o.c, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{o.icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, marginTop: 4 }}>{o.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Nə vaxt?</div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {['Bu gün','Sabah','Cümə','Seç...'].map((d, i) => (
+              <div key={i} style={{ flex: 1, padding: '8px 6px', borderRadius: 8, textAlign: 'center', fontSize: 12, fontWeight: 600, background: i === 1 ? 'oklch(0.50 0.12 240)' : 'oklch(0.96 0.01 60)', color: i === 1 ? 'white' : '#1a1410' }}>{d}</div>
+            ))}
+          </div>
+          <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', marginTop: 10 }}>27 Aprel, Bazar ertəsi · 1 gün</div>
+        </div>
+
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Səbəb · ixtiyari</div>
+          <div style={{ fontSize: 13, color: '#1a1410', lineHeight: 1.5 }}>Konsentrasiya tələb edən dizayn işi var — sabaha presentation hazırlayıram.</div>
+        </div>
+
+        <div style={{ background: 'oklch(0.96 0.03 240)', borderRadius: 12, padding: 12, border: '1px solid oklch(0.90 0.03 240)', display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 12, lineHeight: 1.5, color: 'oklch(0.30 0.10 240)' }}>
+          <window.Icon.Bell s={14} c="oklch(0.50 0.12 240)"/>
+          <div>
+            <b>Rəşad Quliyev</b> (manager) və <b>HR</b> bildiriş alacaq. Hər kəs eyni kanalda görür.
+          </div>
+        </div>
+
+        <button style={{ marginTop: 'auto', background: '#1a1410', color: 'white', padding: '14px 16px', borderRadius: 12, fontSize: 15, fontWeight: 700, border: 'none' }}>Sorğunu göndər</button>
+      </div>
+    </div>
+  );
+}
+
+function RequestSent() {
+  return (
+    <div style={{ width: 390, height: 844, background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700 }}>
+        <span>10:25</span><span style={{ fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ background: 'oklch(0.94 0.05 240)', borderRadius: 18, padding: 22, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', right: -30, top: -30, width: 140, height: 140, borderRadius: '50%', background: 'oklch(0.85 0.10 240 / 0.5)' }}/>
+          <div style={{ position: 'relative' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 14, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <window.Icon.Check s={22} c="oklch(0.50 0.12 240)"/>
+            </div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 28, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500, color: '#0d1730', marginTop: 14 }}>Sorğun yola düşdü.</div>
+            <div style={{ fontSize: 13, color: 'oklch(0.40 0.10 240)', marginTop: 6 }}>Adətən 30 dəqiqəyə cavab gəlir.</div>
+          </div>
+        </div>
+
+        <div style={{ background: 'white', borderRadius: 16, padding: 16, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 12 }}>Status</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Step label="Göndərildi" sub="10:25 · indi" done active/>
+            <Step label="Manager yoxlayır" sub="Rəşad Quliyev · gözlənilir"/>
+            <Step label="Cavab" sub="—" muted/>
+          </div>
+        </div>
+
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)', fontSize: 13, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>Sorğun</div>
+          <b>Uzaqdan iş</b> · 27 Apr (Bazar ertəsi)<br/>
+          <span style={{ color: 'oklch(0.5 0.02 60)' }}>Konsentrasiya tələb edən dizayn işi var...</span>
+        </div>
+
+        <button style={{ marginTop: 'auto', background: 'transparent', color: '#1a1410', padding: '12px 16px', borderRadius: 12, fontSize: 13, fontWeight: 600, border: '1px solid oklch(0.85 0.01 60)' }}>Sorğunu redaktə et / ləğv et</button>
+      </div>
+    </div>
+  );
+}
+
+function Step({ label, sub, done, active, muted }) {
+  return (
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center', opacity: muted ? 0.45 : 1 }}>
+      <div style={{
+        width: 26, height: 26, borderRadius: '50%',
+        background: done ? 'oklch(0.50 0.12 240)' : (active ? 'white' : 'oklch(0.96 0.01 60)'),
+        border: active && !done ? '2px dashed oklch(0.50 0.12 240)' : (done ? 'none' : '1px solid oklch(0.85 0.01 60)'),
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {done && <window.Icon.Check s={14} c="white"/>}
+      </div>
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 700 }}>{label}</div>
+        <div style={{ fontSize: 11, color: 'oklch(0.5 0.02 60)' }}>{sub}</div>
+      </div>
+    </div>
+  );
+}
+
+// Screen 3: Request approved — employee receives approval notification
+function RequestApproved() {
+  return (
+    <div style={{ width: 390, height: 844, background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700 }}>
+        <span>10:54</span><span style={{ fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+        {/* Hero — sage/success */}
+        <div style={{ background: 'oklch(0.94 0.04 155)', borderRadius: 18, padding: 22, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', right: -30, top: -30, width: 140, height: 140, borderRadius: '50%', background: 'oklch(0.85 0.08 155 / 0.5)' }}/>
+          <div style={{ position: 'relative' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 14, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <window.Icon.Check s={22} c="oklch(0.50 0.10 155)"/>
+            </div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 28, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500, color: '#0d1c14', marginTop: 14 }}>
+              Sorğun təsdiqləndi.
+            </div>
+            <div style={{ fontSize: 13, color: 'oklch(0.40 0.10 155)', marginTop: 6 }}>Rəşad Quliyev · 10:53-də qərar verdi</div>
+          </div>
+        </div>
+
+        {/* Request summary */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 16, border: '1px solid oklch(0.92 0.01 60)', fontSize: 13, lineHeight: 1.6 }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Sorğun</div>
+          <div><b>Uzaqdan iş</b> · 27 Apr, Bazar ertəsi</div>
+          <div style={{ color: 'oklch(0.5 0.02 60)', marginTop: 2 }}>Konsentrasiya tələb edən dizayn işi var...</div>
+        </div>
+
+        {/* Manager note */}
+        <div style={{ background: 'oklch(0.96 0.03 155)', borderRadius: 12, padding: 14, border: '1px solid oklch(0.90 0.04 155)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.50 0.10 155)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>Rəşadın qeydi</div>
+          <div style={{ fontSize: 13, color: '#1a1410', lineHeight: 1.5 }}>
+            Sabahkı presentation üçün uğurlar — istəyirsən özəl görüş keçirək?
+          </div>
+        </div>
+
+        {/* Audit note */}
+        <div style={{ background: 'white', borderRadius: 12, padding: 14, border: '1px solid oklch(0.92 0.01 60)', display: 'flex', gap: 8, alignItems: 'center', fontSize: 12, color: 'oklch(0.5 0.02 60)', lineHeight: 1.5 }}>
+          <window.Icon.Bell s={12} c="oklch(0.50 0.10 155)"/>
+          <span>HR bildirildi · Audit log-da qeydə alındı</span>
+        </div>
+
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <button style={{ background: '#1a1410', color: 'white', padding: '14px 16px', borderRadius: 12, fontSize: 15, fontWeight: 700, border: 'none' }}>Başa düşdüm</button>
+          <button style={{ background: 'transparent', color: '#1a1410', padding: 12, fontSize: 13, fontWeight: 600, border: 'none' }}>Sorğu tarixçəsi →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Screen 4: Request declined — gentle amber tone, not aggressive red
+function RequestDeclined() {
+  return (
+    <div style={{ width: 390, height: 844, background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700 }}>
+        <span>11:02</span><span style={{ fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+        {/* Hero — amber/warm, not aggressive red */}
+        <div style={{ background: 'oklch(0.96 0.05 75)', borderRadius: 18, padding: 22, position: 'relative', overflow: 'hidden', border: '1px solid oklch(0.88 0.06 75)' }}>
+          <div style={{ position: 'relative' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 14, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <window.Icon.X s={20} c="oklch(0.55 0.15 75)"/>
+            </div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 26, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500, color: '#1a1410', marginTop: 14 }}>
+              Bu dəfə olmadı.
+            </div>
+            <div style={{ fontSize: 13, color: 'oklch(0.50 0.12 75)', marginTop: 4 }}>Rəşad Quliyev · 11:01-də qərar verdi</div>
+          </div>
+        </div>
+
+        {/* Request summary */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 16, border: '1px solid oklch(0.92 0.01 60)', fontSize: 13, lineHeight: 1.6 }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Sorğun</div>
+          <div><b>Uzaqdan iş</b> · 27 Apr, Bazar ertəsi</div>
+        </div>
+
+        {/* Manager reason — always required for declines */}
+        <div style={{ background: 'white', borderRadius: 14, padding: 16, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Rəşadın izahı</div>
+          <div style={{ fontSize: 13, color: '#1a1410', lineHeight: 1.6 }}>
+            Sabah şirkət daxili prezentasiya var, fiziki iştirak gözlənilir. Başqa bir gün razılaşa bilərik?
+          </div>
+        </div>
+
+        {/* Suggest alternative */}
+        <div style={{ background: 'oklch(0.96 0.03 240)', borderRadius: 12, padding: 14, border: '1px solid oklch(0.90 0.03 240)', display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 12, color: 'oklch(0.30 0.10 240)', lineHeight: 1.5 }}>
+          <window.Icon.Calendar s={14} c="oklch(0.50 0.12 240)"/>
+          <div>Yeni bir tarix üçün sorğu göndərə bilərsən. Çərşənbə — Cümə tez-tez icazə verilir.</div>
+        </div>
+
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <button style={{ background: '#1a1410', color: 'white', padding: '14px 16px', borderRadius: 12, fontSize: 15, fontWeight: 700, border: 'none' }}>Yeni sorğu göndər</button>
+          <button style={{ background: 'transparent', color: '#1a1410', padding: 12, fontSize: 13, fontWeight: 600, border: 'none' }}>Başa düşdüm, bağla</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+window.RequestForm = RequestForm;
+window.RequestSent = RequestSent;
+window.RequestApproved = RequestApproved;
+window.RequestDeclined = RequestDeclined;
+
+  </script>
+
+  <!-- ===== flow4-manager.jsx ===== -->
+  <script type="text/babel">
+// Flow 4 — Manager team live status (desktop) + Flow 5 request inbox
+
+function ManagerTeamLive() {
+  const team = (window.EMPLOYEES || []).filter(e => ['eng'].includes(e.team) || true).slice(0, 12);
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* Header */}
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid oklch(0.92 0.01 60)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', background: 'white' }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.5 0.02 60)', textTransform: 'uppercase' }}>Komandam · canlı</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 30, lineHeight: 1.1, letterSpacing: -0.7, fontWeight: 500, marginTop: 4 }}>Bu gün hardadırlar?</div>
+        </div>
+        <div style={{ display: 'flex', gap: 10, fontSize: 12, color: 'oklch(0.5 0.02 60)' }}>
+          <div>Şənbə · 26 Aprel · 14:32</div>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'oklch(0.62 0.13 155)', alignSelf: 'center' }}/>
+          <div>canlı</div>
+        </div>
+      </div>
+
+      {/* KPI strip */}
+      <div style={{ padding: '16px 28px', display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, background: 'white', borderBottom: '1px solid oklch(0.92 0.01 60)' }}>
+        <Kpi label="Ofisdə" v="7" tone="oklch(0.62 0.13 155)" big/>
+        <Kpi label="Uzaqdan" v="3" tone="oklch(0.60 0.14 240)" big/>
+        <Kpi label="Görüşdə" v="1" tone="oklch(0.60 0.16 320)"/>
+        <Kpi label="Çöldə" v="1" tone="oklch(0.60 0.16 320)"/>
+        <Kpi label="Məz/xəstə" v="2" tone="oklch(0.55 0.03 60)"/>
+        <Kpi label="Açıq sorğu" v="3" tone="oklch(0.65 0.18 35)" highlight/>
+      </div>
+
+      {/* Body */}
+      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 320px', overflow: 'hidden' }}>
+        <div style={{ padding: 20, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {team.map(e => <PersonRow key={e.id} e={e}/>)}
+        </div>
+        <div style={{ borderLeft: '1px solid oklch(0.92 0.01 60)', padding: 20, background: 'oklch(0.97 0.01 60)', overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Bu gün xronologiya</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+              {(window.AUDIT || []).slice(0, 6).map((a, i) => (
+                <div key={i} style={{ display: 'flex', gap: 8, fontSize: 11.5 }}>
+                  <div style={{ fontFamily: '"JetBrains Mono", monospace', color: 'oklch(0.5 0.02 60)', minWidth: 36 }}>{a.time}</div>
+                  <div style={{ color: '#1a1410', lineHeight: 1.45 }}><b>{a.actor}</b> {a.action}<br/><span style={{ color: 'oklch(0.5 0.02 60)' }}>{a.target}</span></div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ background: 'white', borderRadius: 12, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+            <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.55 0.16 35)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Bu həftə təşəkkür göndər</div>
+            <div style={{ fontSize: 12, color: 'oklch(0.4 0.02 60)', marginTop: 6, lineHeight: 1.5 }}>Komandadan kim sənə kömək etdi? 3 nəfərə kudos göndərmək vaxtıdır.</div>
+            <button style={{ marginTop: 10, width: '100%', padding: '10px 12px', background: '#1a1410', color: 'white', borderRadius: 8, fontSize: 12, fontWeight: 700, border: 'none' }}>Kudos göndər</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Kpi({ label, v, tone, big, highlight }) {
+  return (
+    <div style={{
+      padding: 12, borderRadius: 10,
+      background: highlight ? 'oklch(0.96 0.04 35)' : 'oklch(0.97 0.01 60)',
+      border: highlight ? '1px solid oklch(0.85 0.06 35)' : '1px solid oklch(0.93 0.01 60)',
+    }}>
+      <div style={{ fontSize: 10, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.1, textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ fontFamily: '"Fraunces", serif', fontSize: big ? 30 : 24, fontWeight: 600, letterSpacing: -0.7, color: tone, lineHeight: 1, marginTop: 4 }}>{v}</div>
+    </div>
+  );
+}
+
+function PersonRow({ e }) {
+  const team = window.teamById(e.team);
+  return (
+    <div style={{ background: 'white', borderRadius: 12, padding: '12px 16px', display: 'grid', gridTemplateColumns: '36px 1fr 120px 140px 90px 80px', gap: 14, alignItems: 'center', border: '1px solid oklch(0.93 0.01 60)' }}>
+      <window.Avatar name={e.name} size={36}/>
+      <div>
+        <div style={{ fontSize: 13.5, fontWeight: 700, letterSpacing: -0.1 }}>{e.name}{e.isLead && <span style={{ fontSize: 10, marginLeft: 6, padding: '2px 6px', background: 'oklch(0.96 0.01 60)', borderRadius: 4, color: 'oklch(0.5 0.02 60)', fontWeight: 600, letterSpacing: 0.3 }}>LEAD</span>}</div>
+        <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)' }}>{e.role} · {team?.name}</div>
+      </div>
+      <div><window.StatusChip status={e.status} size="sm"/></div>
+      <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)' }}>
+        {e.arrived ? <><b style={{ color: '#1a1410', fontFamily: '"JetBrains Mono", monospace' }}>{e.arrived}</b> · check-in</> : '—'}
+      </div>
+      <div style={{ fontSize: 11.5, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <span style={{ color: e.streak >= 7 ? 'oklch(0.65 0.18 35)' : 'oklch(0.5 0.02 60)' }}>◆</span>
+        <b>{e.streak}</b> <span style={{ color: 'oklch(0.5 0.02 60)' }}>g</span>
+      </div>
+      <div style={{ fontSize: 11.5, fontFamily: '"JetBrains Mono", monospace', color: 'oklch(0.4 0.02 60)' }}>{e.hoursWeek}s</div>
+    </div>
+  );
+}
+
+// Manager request inbox
+function ManagerRequestInbox() {
+  const requests = window.REQUESTS || [];
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'grid', gridTemplateColumns: '380px 1fr', overflow: 'hidden' }}>
+      <div style={{ borderRight: '1px solid oklch(0.92 0.01 60)', background: 'white', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '20px 22px', borderBottom: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.5 0.02 60)', textTransform: 'uppercase' }}>Sorğu inbox</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 24, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500, marginTop: 2 }}>3 gözləyir</div>
+        </div>
+        <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 6, overflow: 'auto' }}>
+          {requests.map((r, i) => {
+            const e = window.byId(r.from);
+            const sel = i === 0;
+            return (
+              <div key={r.id} style={{
+                padding: 12, borderRadius: 10,
+                background: sel ? 'oklch(0.96 0.04 35)' : 'transparent',
+                border: sel ? '1px solid oklch(0.85 0.06 35)' : '1px solid transparent',
+                display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer',
+              }}>
+                <window.Avatar name={e?.name} size={32}/>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 700 }}>{e?.name}</div>
+                    <div style={{ fontSize: 10.5, color: 'oklch(0.5 0.02 60)' }}>{r.sent}</div>
+                  </div>
+                  <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', marginTop: 2 }}>
+                    <b style={{ color: '#1a1410' }}>{window.REQUEST_TYPES[r.type]?.label}</b> · {r.range}
+                  </div>
+                  <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+                    {r.status === 'pending' ? <span style={{ fontSize: 9.5, padding: '2px 6px', background: 'oklch(0.96 0.05 75)', color: 'oklch(0.55 0.15 75)', borderRadius: 4, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase' }}>Gözləyir</span>
+                                              : <span style={{ fontSize: 9.5, padding: '2px 6px', background: 'oklch(0.96 0.03 155)', color: 'oklch(0.50 0.10 155)', borderRadius: 4, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase' }}>Təsdiqli</span>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div style={{ padding: 32, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
+        {(() => {
+          const r = requests[0];
+          const e = window.byId(r.from);
+          return (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <window.Avatar name={e?.name} size={56}/>
+                <div>
+                  <div style={{ fontFamily: '"Fraunces", serif', fontSize: 26, fontWeight: 500, letterSpacing: -0.5 }}>{e?.name}</div>
+                  <div style={{ fontSize: 13, color: 'oklch(0.5 0.02 60)' }}>{e?.role}</div>
+                </div>
+              </div>
+              <div style={{ background: 'white', borderRadius: 14, padding: 18, border: '1px solid oklch(0.92 0.01 60)' }}>
+                <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Sorğu</div>
+                <div style={{ fontFamily: '"Fraunces", serif', fontSize: 22, fontWeight: 500, letterSpacing: -0.4 }}>{window.REQUEST_TYPES[r.type]?.label} · {r.range}</div>
+                <div style={{ fontSize: 13.5, color: '#1a1410', marginTop: 10, lineHeight: 1.6 }}>{r.reason}</div>
+              </div>
+              <div style={{ background: 'oklch(0.96 0.03 155)', borderRadius: 12, padding: 14, border: '1px solid oklch(0.90 0.04 155)' }}>
+                <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.50 0.10 155)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Sistem konteksti</div>
+                <div style={{ fontSize: 12.5, color: '#1a1410', lineHeight: 1.5, marginTop: 6 }}>
+                  Bu ay <b>2 dəfə</b> uzaqdan işləyib · həftəlik norma <b>40 saatdan</b> aşağı düşməyib · komandada o gün böyük görüş yoxdur
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button style={{ flex: 1, padding: '14px 16px', background: 'oklch(0.50 0.10 155)', color: 'white', borderRadius: 10, fontSize: 14, fontWeight: 700, border: 'none' }}>Təsdiqlə</button>
+                <button style={{ flex: 1, padding: '14px 16px', background: 'white', color: '#1a1410', borderRadius: 10, fontSize: 14, fontWeight: 600, border: '1px solid oklch(0.85 0.01 60)' }}>Daha çox məlumat</button>
+                <button style={{ padding: '14px 16px', background: 'transparent', color: 'oklch(0.55 0.15 75)', borderRadius: 10, fontSize: 14, fontWeight: 600, border: '1px solid oklch(0.85 0.01 60)' }}>Rədd</button>
+              </div>
+              <div style={{ background: 'white', borderRadius: 12, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+                <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Bu sorğu kimə görünür</div>
+                <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+                  {[{ n: 'Sən (Manager)', t: 'qərar verir' }, { n: 'Aydan R. (HR)', t: 'görür, audit' }, { n: 'Mələk T.', t: 'cavabı görür' }].map((p, i) => (
+                    <div key={i} style={{ flex: 1, display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <window.Avatar name={p.n} size={26}/>
+                      <div>
+                        <div style={{ fontSize: 11.5, fontWeight: 700 }}>{p.n}</div>
+                        <div style={{ fontSize: 10, color: 'oklch(0.5 0.02 60)' }}>{p.t}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          );
+        })()}
+      </div>
+    </div>
+  );
+}
+
+window.ManagerTeamLive = ManagerTeamLive;
+window.ManagerRequestInbox = ManagerRequestInbox;
+
+  </script>
+
+  <!-- ===== flow5-rewards.jsx ===== -->
+  <script type="text/babel">
+// Flow 5 — Rewards: kudos compose, milestone unlock, rewards catalog, manager spotlight
+
+function KudosCompose() {
+  return (
+    <div style={{ width: 390, height: 844, background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700 }}>
+        <span>16:08</span><span style={{ fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div>
+          <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 1.4, color: 'oklch(0.50 0.14 320)', textTransform: 'uppercase' }}>Kudos göndər</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 26, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500, marginTop: 4 }}>Kim sənə bu həftə kömək etdi?</div>
+        </div>
+
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Kimə</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: 'oklch(0.96 0.03 320)', borderRadius: 10, border: '1px solid oklch(0.88 0.05 320)' }}>
+            <window.Avatar name="Cavid Hüseynov" size={32}/>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700 }}>Cavid Hüseynov</div>
+              <div style={{ fontSize: 10.5, color: 'oklch(0.5 0.02 60)' }}>Senior Backend · Mühəndislik</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 }}>Hansı dəyər?</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {[
+              ['Komanda dayağı', true,  'oklch(0.50 0.14 320)'],
+              ['Yaradıcılıq',    false, 'oklch(0.55 0.16 35)'],
+              ['Sahiblik',       false, 'oklch(0.50 0.10 155)'],
+              ['Sürət',          false, 'oklch(0.50 0.12 240)'],
+              ['Şəffaflıq',      false, 'oklch(0.55 0.15 75)'],
+              ['Empatiya',       false, 'oklch(0.55 0.15 5)'],
+            ].map(([label, sel, color]) => (
+              <div key={label} style={{
+                padding: '7px 12px', borderRadius: 999, fontSize: 12, fontWeight: 600,
+                background: sel ? color : 'oklch(0.97 0.01 60)',
+                color: sel ? 'white' : '#1a1410',
+                border: sel ? 'none' : '1px solid oklch(0.92 0.01 60)',
+              }}>{label}</div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>Niyə</div>
+          <div style={{ fontSize: 13, color: '#1a1410', lineHeight: 1.5 }}>Spec-imi yoxlayıb 3 yeri göstərdin — vaxtımı qoruyub saxladın. <span style={{ color: 'oklch(0.5 0.02 60)' }}>|</span></div>
+        </div>
+
+        <div style={{ background: 'oklch(0.96 0.03 320)', borderRadius: 10, padding: 12, fontSize: 11.5, color: 'oklch(0.40 0.14 320)', lineHeight: 1.5, border: '1px solid oklch(0.90 0.04 320)' }}>
+          Kudoslar açıqdır — komanda görür. <b>Dəyər tag-i</b> şirkət dəyərlərinə bağlıdır, HR illik retrospektivdə bunları analiz edir.
+        </div>
+
+        <button style={{ marginTop: 'auto', background: 'oklch(0.50 0.14 320)', color: 'white', padding: '14px 16px', borderRadius: 12, fontSize: 15, fontWeight: 700, border: 'none' }}>Kudos göndər</button>
+      </div>
+    </div>
+  );
+}
+
+function MilestoneUnlock() {
+  return (
+    <div style={{ width: 390, height: 844, background: 'linear-gradient(180deg, oklch(0.20 0.04 35), oklch(0.16 0.02 35))', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden', color: 'oklch(0.96 0.02 35)' }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, color: 'oklch(0.96 0.02 35)' }}>
+        <span>09:01</span><span style={{ fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      <div style={{ flex: 1, padding: '20px 28px 32px', display: 'flex', flexDirection: 'column', gap: 18, justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+        <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 2, color: 'oklch(0.78 0.18 35)', textTransform: 'uppercase' }}>Mərhələ açıldı</div>
+        <div style={{ width: 120, height: 120, borderRadius: 28, background: 'linear-gradient(135deg, oklch(0.65 0.18 35), oklch(0.72 0.16 50))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 64, color: 'white', boxShadow: '0 20px 50px -12px oklch(0.65 0.18 35 / 0.6)' }}>◆</div>
+        <div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 36, lineHeight: 1.1, letterSpacing: -1, fontWeight: 600 }}>30 gün davam</div>
+          <div style={{ fontSize: 14, color: 'oklch(0.78 0.10 35)', marginTop: 6, lineHeight: 1.5 }}>Bir ay ardıcıl ritm. Bunu hiss etmək azdır — bu, ardıcıllıqdır.</div>
+        </div>
+
+        <div style={{ width: '100%', background: 'oklch(0.30 0.06 35 / 0.5)', borderRadius: 16, padding: 16, border: '1px solid oklch(0.45 0.10 35 / 0.4)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.78 0.10 35)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Bunula açılan mükafat</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 10 }}>
+            <div style={{ fontSize: 32 }}>📚</div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>Kitab seçimi · 40 AZN</div>
+              <div style={{ fontSize: 11.5, color: 'oklch(0.78 0.10 35)' }}>Mükafatlar bölməsində götür</div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+          <button style={{ flex: 1, background: 'oklch(0.96 0.04 35)', color: '#5a2510', padding: '14px', borderRadius: 12, fontSize: 14, fontWeight: 700, border: 'none' }}>Mükafata bax</button>
+          <button style={{ flex: 1, background: 'transparent', color: 'oklch(0.96 0.02 35)', padding: '14px', borderRadius: 12, fontSize: 14, fontWeight: 600, border: '1px solid oklch(0.45 0.10 35 / 0.5)' }}>Sonra</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RewardsCatalog() {
+  const items = [
+    { icon: '☕', name: 'Qəhvə kuponu',     unlock: '7 gün ritm',    val: '15 AZN', tier: 'kiçik', ready: true },
+    { icon: '📚', name: 'Kitab seçimi',     unlock: '14 gün ritm',   val: '40 AZN', tier: 'kiçik', ready: true },
+    { icon: '🍽', name: 'Nahar kuponu',     unlock: '20 kudos al',   val: '25 AZN', tier: 'kiçik', ready: true },
+    { icon: '🎓', name: 'Onlayn kurs',      unlock: '30 gün ritm',   val: '200 AZN', tier: 'orta', ready: false, prog: 0.66 },
+    { icon: '🌿', name: '+1 gün məzuniyyət', unlock: '60 gün ritm',   val: 'tək gün', tier: 'böyük', ready: false, prog: 0.33 },
+    { icon: '🎁', name: 'Manager spotlight', unlock: 'manager seçir', val: '100 AZN', tier: 'orta', ready: false, manager: true },
+    { icon: '🏖', name: 'Komanda yeməyi',    unlock: 'komanda streak 30g', val: 'birgə', tier: 'orta', team: true, ready: false, prog: 0.5 },
+    { icon: '✦',  name: 'İllik nailiyyət',   unlock: '1 il davam',    val: 'şəxsi paket', tier: 'böyük', ready: false, prog: 0.05 },
+  ];
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid oklch(0.92 0.01 60)', background: 'white' }}>
+        <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.55 0.16 35)', textTransform: 'uppercase' }}>Mükafat kataloqu</div>
+        <div style={{ fontFamily: '"Fraunces", serif', fontSize: 30, lineHeight: 1.1, letterSpacing: -0.7, fontWeight: 500, marginTop: 4 }}>Sənin nailiyyətlərin · sənin seçimin</div>
+      </div>
+      <div style={{ flex: 1, padding: 28, overflow: 'auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, alignContent: 'flex-start' }}>
+        {items.map((r, i) => (
+          <div key={i} style={{
+            background: 'white', borderRadius: 14, padding: 18,
+            border: r.ready ? '1.5px solid oklch(0.65 0.18 35)' : '1px solid oklch(0.92 0.01 60)',
+            position: 'relative', display: 'flex', flexDirection: 'column', gap: 8,
+          }}>
+            {r.ready && <span style={{ position: 'absolute', top: 12, right: 12, fontSize: 9.5, padding: '3px 8px', borderRadius: 999, background: 'oklch(0.65 0.18 35)', color: 'white', fontWeight: 800, letterSpacing: 0.8, textTransform: 'uppercase' }}>Hazır</span>}
+            <div style={{ fontSize: 36, lineHeight: 1 }}>{r.icon}</div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>{r.name}</div>
+              <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', marginTop: 2 }}>{r.unlock}</div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'oklch(0.4 0.02 60)', marginTop: 4 }}>
+              <span style={{ padding: '2px 7px', background: 'oklch(0.96 0.01 60)', borderRadius: 4, fontWeight: 600, letterSpacing: 0.3, textTransform: 'uppercase', fontSize: 9.5 }}>{r.tier}</span>
+              <b style={{ color: '#1a1410' }}>{r.val}</b>
+            </div>
+            {r.prog != null && (
+              <div style={{ height: 4, background: 'oklch(0.94 0.01 60)', borderRadius: 2, marginTop: 4 }}>
+                <div style={{ width: `${r.prog * 100}%`, height: '100%', background: 'oklch(0.65 0.18 35)', borderRadius: 2 }}/>
+              </div>
+            )}
+            {r.manager && <div style={{ fontSize: 10.5, color: 'oklch(0.50 0.14 320)', fontWeight: 700 }}>↳ Manager spotlight ilə</div>}
+            {r.team && <div style={{ fontSize: 10.5, color: 'oklch(0.50 0.10 155)', fontWeight: 700 }}>↳ Komanda hədəfi</div>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ManagerSpotlight() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid oklch(0.92 0.01 60)', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.50 0.14 320)', textTransform: 'uppercase' }}>Aylıq spotlight</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 28, lineHeight: 1.1, letterSpacing: -0.6, fontWeight: 500, marginTop: 4 }}>Bu ay kim öndə?</div>
+        </div>
+        <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)' }}>Aprel 2026 · 4 gün qalıb</div>
+      </div>
+      <div style={{ flex: 1, padding: 28, display: 'grid', gridTemplateColumns: '1fr 360px', gap: 24, overflow: 'auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Sistem önə çıxardığı 3 nəfər</div>
+          {[
+            { e: window.byId('e02'), why: '4 kudos aldı · 38 saat fokus', sel: true },
+            { e: window.byId('o01'), why: '89 günlük ritm · komandaya dəstək', sel: false },
+            { e: window.byId('s02'), why: 'Açıq peer feedback üzərində iş', sel: false },
+          ].map(({ e, why, sel }) => e && (
+            <div key={e.id} style={{
+              background: 'white', borderRadius: 14, padding: 16,
+              border: sel ? '1.5px solid oklch(0.50 0.14 320)' : '1px solid oklch(0.92 0.01 60)',
+              display: 'flex', gap: 14, alignItems: 'center',
+            }}>
+              <window.Avatar name={e.name} size={48}/>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 700 }}>{e.name}</div>
+                <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)' }}>{e.role}</div>
+                <div style={{ fontSize: 12, color: 'oklch(0.40 0.14 320)', marginTop: 4 }}>{why}</div>
+              </div>
+              {sel && <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'oklch(0.50 0.14 320)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><window.Icon.Check s={14} c="white"/></div>}
+            </div>
+          ))}
+          <div style={{ background: 'oklch(0.96 0.03 240)', borderRadius: 12, padding: 14, border: '1px solid oklch(0.90 0.03 240)', fontSize: 12, color: 'oklch(0.30 0.10 240)', lineHeight: 1.5 }}>
+            <b>Növbəlilik:</b> Cavid son 6 ayda spotlight almayıb. Sistem ədalətli rotasiya təklif edir — eyni nəfər il ərzində 1 dəfədən çox seçilmir.
+          </div>
+        </div>
+        <div style={{ background: 'white', borderRadius: 14, padding: 18, border: '1px solid oklch(0.92 0.01 60)', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Mükafat seç</div>
+          {[
+            { icon: '🎁', name: 'Hədiyyə kartı · 100 AZN', sel: true },
+            { icon: '📚', name: 'Kitab paketi', sel: false },
+            { icon: '🌿', name: '+1 gün məzuniyyət', sel: false },
+            { icon: '🎟', name: 'Konfrans bileti', sel: false },
+          ].map((o, i) => (
+            <div key={i} style={{
+              padding: 12, borderRadius: 10,
+              background: o.sel ? 'oklch(0.96 0.03 320)' : 'oklch(0.97 0.01 60)',
+              border: o.sel ? '1.5px solid oklch(0.50 0.14 320)' : '1px solid oklch(0.93 0.01 60)',
+              display: 'flex', gap: 10, alignItems: 'center',
+            }}>
+              <div style={{ fontSize: 22 }}>{o.icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>{o.name}</div>
+            </div>
+          ))}
+          <div style={{ marginTop: 4, fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Şəxsi qeyd · ixtiyari</div>
+          <div style={{ fontSize: 12.5, color: '#1a1410', padding: 12, background: 'oklch(0.97 0.01 60)', borderRadius: 8, lineHeight: 1.5 }}>
+            <span style={{ color: 'oklch(0.5 0.02 60)' }}>Cavid, bu ay komandaya çox kömək etdin — review-larin xüsusilə dəyərli idi.</span>
+          </div>
+          <button style={{ background: 'oklch(0.50 0.14 320)', color: 'white', padding: '14px', borderRadius: 10, fontSize: 14, fontWeight: 700, border: 'none' }}>Spotlight elan et</button>
+          <div style={{ fontSize: 10.5, color: 'oklch(0.5 0.02 60)', textAlign: 'center' }}>Komanda kanalında elan olunur · audit log saxlanır</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Screen 5: Kudos received — full view after notification tap
+function KudosReceived() {
+  return (
+    <div style={{ width: 390, height: 844, background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700 }}>
+        <span>16:22</span><span style={{ fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+        {/* Hero — plum */}
+        <div style={{ background: 'linear-gradient(135deg, oklch(0.96 0.03 320), oklch(0.94 0.04 340))', borderRadius: 20, padding: 22, border: '1.5px solid oklch(0.88 0.05 320)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', right: -20, bottom: -20, fontSize: 100, color: 'oklch(0.60 0.16 320 / 0.12)', lineHeight: 1 }}>♡</div>
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.50 0.14 320)', textTransform: 'uppercase', marginBottom: 14 }}>Sənə kudos gəldi</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <window.Avatar name="Cavid Hüseynov" size={52}/>
+              <div>
+                <div style={{ fontFamily: '"Fraunces", serif', fontSize: 22, fontWeight: 600, letterSpacing: -0.3, color: '#1a1410' }}>Cavid Hüseynov</div>
+                <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)', marginTop: 2 }}>Senior Backend · Mühəndislik</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Value tag */}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 18px', borderRadius: 999, background: 'oklch(0.50 0.14 320)', color: 'white', fontSize: 13, fontWeight: 700 }}>
+            <window.Icon.Heart s={14} c="white"/>
+            Komanda dayağı
+          </div>
+        </div>
+
+        {/* Full message */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 18, border: '1px solid oklch(0.92 0.01 60)', flex: 1 }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 12 }}>Yazıb ki</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 18, lineHeight: 1.6, color: '#1a1410', fontStyle: 'italic' }}>
+            "Spec-imi yoxlayıb 3 yeri göstərdin — vaxtımı qoruyub saxladın. Sən olmasan, nə olardı bilmirəm!"
+          </div>
+        </div>
+
+        {/* Visibility note */}
+        <div style={{ background: 'oklch(0.96 0.03 320)', borderRadius: 10, padding: 12, fontSize: 11.5, color: 'oklch(0.40 0.14 320)', lineHeight: 1.5, border: '1px solid oklch(0.90 0.04 320)' }}>
+          Bu kudos komandada görünür. Dəyər tag-i HR-ın illik analizinə gedir.
+        </div>
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button style={{ flex: 1, background: '#1a1410', color: 'white', padding: '14px', borderRadius: 12, fontSize: 14, fontWeight: 700, border: 'none' }}>Minnətdaram!</button>
+          <button style={{ flex: 1, background: 'white', color: '#1a1410', padding: '14px', borderRadius: 12, fontSize: 14, fontWeight: 600, border: '1px solid oklch(0.85 0.01 60)' }}>Sən də göndər →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Screen 6: Reward redemption — claim a ready reward
+function RewardRedeem() {
+  return (
+    <div style={{ width: 390, height: 844, background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700 }}>
+        <span>14:45</span><span style={{ fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      <div style={{ flex: 1, padding: '6px 22px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+        {/* Hero — dark celebration */}
+        <div style={{ background: 'linear-gradient(180deg, oklch(0.20 0.04 35), oklch(0.18 0.03 35))', borderRadius: 20, padding: 28, textAlign: 'center', position: 'relative', overflow: 'hidden', color: 'oklch(0.96 0.02 35)' }}>
+          <div style={{ position: 'absolute', left: -12, top: -12, fontSize: 80, color: 'oklch(0.45 0.16 35 / 0.25)', lineHeight: 1 }}>☕</div>
+          <div style={{ position: 'absolute', right: -12, bottom: -12, fontSize: 80, color: 'oklch(0.45 0.16 35 / 0.25)', lineHeight: 1 }}>☕</div>
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.6, color: 'oklch(0.78 0.18 35)', textTransform: 'uppercase' }}>Mükafat hazırdır!</div>
+            <div style={{ fontSize: 56, margin: '12px 0 8px', lineHeight: 1 }}>☕</div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 28, lineHeight: 1.1, letterSpacing: -0.6, fontWeight: 500 }}>Qəhvə kuponu</div>
+            <div style={{ fontSize: 13, color: 'oklch(0.78 0.10 35)', marginTop: 6 }}>7 gün ritm nailiyyəti · 15 AZN dəyərində</div>
+          </div>
+        </div>
+
+        {/* Redemption code */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 20, border: '1px solid oklch(0.92 0.01 60)', textAlign: 'center' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 12 }}>İstifadə kodu</div>
+          <div style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: 26, fontWeight: 700, letterSpacing: 4, color: '#1a1410', padding: '16px 20px', background: 'oklch(0.96 0.04 35)', borderRadius: 12, border: '1.5px dashed oklch(0.65 0.18 35)' }}>
+            CAF-2026-M7
+          </div>
+          <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)', marginTop: 10, lineHeight: 1.5 }}>HR-a göstər · ofis 204 · 30 gün etibarlıdır</div>
+        </div>
+
+        {/* Expiry */}
+        <div style={{ background: 'oklch(0.96 0.04 35)', borderRadius: 12, padding: 12, border: '1px solid oklch(0.88 0.06 35)', display: 'flex', gap: 10, alignItems: 'center' }}>
+          <window.Icon.Clock s={14} c="oklch(0.55 0.16 35)"/>
+          <div style={{ fontSize: 12.5, color: 'oklch(0.45 0.10 35)' }}>Son istifadə: <b>26 May 2026</b></div>
+        </div>
+
+        {/* How to use */}
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 }}>Necə istifadə etmək olar?</div>
+          {[
+            '1. HR-ın yanına get (otaq 204)',
+            '2. Kodu göstər',
+            '3. Qəhvəni seç — soyuq da qəbul edilir 😉',
+          ].map((s, i) => (
+            <div key={i} style={{ fontSize: 13, color: '#1a1410', lineHeight: 1.7 }}>{s}</div>
+          ))}
+        </div>
+
+        <button style={{ marginTop: 'auto', background: 'transparent', color: '#1a1410', padding: '12px 16px', borderRadius: 12, fontSize: 13, fontWeight: 600, border: '1px solid oklch(0.85 0.01 60)' }}>Mükafatlarıma qayıt</button>
+      </div>
+    </div>
+  );
+}
+
+window.KudosCompose = KudosCompose;
+window.MilestoneUnlock = MilestoneUnlock;
+window.RewardsCatalog = RewardsCatalog;
+window.ManagerSpotlight = ManagerSpotlight;
+window.KudosReceived = KudosReceived;
+window.RewardRedeem = RewardRedeem;
+
+  </script>
+
+  <!-- ===== flow6-hr.jsx ===== -->
+  <script type="text/babel">
+// Flow 6 — HR/Admin: company dashboard, policies, audit log
+// Trust + visibility. Single source of truth.
+
+function HRCompanyDashboard() {
+  const k = window.COMPANY_KPIS;
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid oklch(0.92 0.01 60)', background: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.5 0.02 60)', textTransform: 'uppercase' }}>HR · Şirkət canlı</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 30, lineHeight: 1.1, letterSpacing: -0.7, fontWeight: 500, marginTop: 4 }}>Bugün 54 nəfərdən...</div>
+        </div>
+        <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)' }}>Şənbə · 26 Aprel · 14:32 <span style={{ color: 'oklch(0.62 0.13 155)' }}>● canlı</span></div>
+      </div>
+
+      <div style={{ flex: 1, padding: 24, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: 10 }}>
+          {[
+            ['Ofisdə', k.inOffice, 'oklch(0.62 0.13 155)'],
+            ['Uzaqdan', k.remote, 'oklch(0.60 0.14 240)'],
+            ['Görüşdə', k.meeting, 'oklch(0.60 0.16 320)'],
+            ['Çöldə', k.field, 'oklch(0.60 0.16 320)'],
+            ['Məzun.', k.off, 'oklch(0.55 0.03 60)'],
+            ['Xəstə', k.sick, 'oklch(0.55 0.15 75)'],
+            ['Hələ yox', k.notyet, 'oklch(0.55 0.03 60)'],
+            ['Açıq sorğu', k.pendingReqs, 'oklch(0.65 0.18 35)'],
+          ].map(([l, v, c], i) => (
+            <div key={i} style={{ background: 'white', borderRadius: 12, padding: 14, border: '1px solid oklch(0.93 0.01 60)' }}>
+              <div style={{ fontSize: 10, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.1, textTransform: 'uppercase' }}>{l}</div>
+              <div style={{ fontFamily: '"Fraunces", serif', fontSize: 28, fontWeight: 600, letterSpacing: -0.6, color: c, lineHeight: 1, marginTop: 4 }}>{v}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div style={{ background: 'white', borderRadius: 14, padding: 18, border: '1px solid oklch(0.92 0.01 60)' }}>
+            <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 }}>Komandalar üzrə</div>
+            {(window.TEAMS || []).map(t => (
+              <div key={t.id} style={{ display: 'grid', gridTemplateColumns: '120px 1fr 60px', gap: 12, alignItems: 'center', padding: '8px 0', borderBottom: '1px solid oklch(0.96 0.01 60)' }}>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>{t.name}</div>
+                <div style={{ display: 'flex', height: 14, borderRadius: 7, overflow: 'hidden', background: 'oklch(0.96 0.01 60)' }}>
+                  <div style={{ width: '55%', background: 'oklch(0.62 0.13 155)' }}/>
+                  <div style={{ width: '20%', background: 'oklch(0.60 0.14 240)' }}/>
+                  <div style={{ width: '10%', background: 'oklch(0.60 0.16 320)' }}/>
+                  <div style={{ width: '8%',  background: 'oklch(0.55 0.15 75)' }}/>
+                </div>
+                <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)', textAlign: 'right', fontFamily: '"JetBrains Mono", monospace' }}>{Math.floor(Math.random()*15+8)}</div>
+              </div>
+            ))}
+            <div style={{ fontSize: 11, color: 'oklch(0.5 0.02 60)', marginTop: 10, display: 'flex', gap: 14 }}>
+              <span><span style={{ display: 'inline-block', width: 8, height: 8, background: 'oklch(0.62 0.13 155)', borderRadius: 2, marginRight: 4 }}/>Ofisdə</span>
+              <span><span style={{ display: 'inline-block', width: 8, height: 8, background: 'oklch(0.60 0.14 240)', borderRadius: 2, marginRight: 4 }}/>Uzaqdan</span>
+              <span><span style={{ display: 'inline-block', width: 8, height: 8, background: 'oklch(0.60 0.16 320)', borderRadius: 2, marginRight: 4 }}/>Görüş/çöl</span>
+              <span><span style={{ display: 'inline-block', width: 8, height: 8, background: 'oklch(0.55 0.15 75)', borderRadius: 2, marginRight: 4 }}/>Xəstə/məz.</span>
+            </div>
+          </div>
+
+          <div style={{ background: 'white', borderRadius: 14, padding: 18, border: '1px solid oklch(0.92 0.01 60)' }}>
+            <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.55 0.16 35)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 }}>Diqqət istəyən nümunələr</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <Pattern title="2 nəfər 14 gündən artıq fasiləsiz işləyir" sub="İlahə M., Toğrul Ə. — yorğunluq siqnalı" tone="oklch(0.55 0.15 75)"/>
+              <Pattern title="Satış komandasında uzaqdan iş artıb" sub="Bu həftə +40% — manager ilə danışıq" tone="oklch(0.60 0.14 240)"/>
+              <Pattern title="3 sorğu CEO-ya yazışmadan kanal vasitəsilə gəldi" sub="Sistem keçidi uğurlu — köhnə vərdiş azalır" tone="oklch(0.50 0.10 155)"/>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ background: 'white', borderRadius: 14, padding: 18, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 }}>Audit log · son 8 hadisə</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr 80px', gap: 8, fontSize: 11.5 }}>
+            {(window.AUDIT || []).map((a, i) => (
+              <React.Fragment key={i}>
+                <div style={{ fontFamily: '"JetBrains Mono", monospace', color: 'oklch(0.5 0.02 60)' }}>{a.time}</div>
+                <div><b>{a.actor}</b></div>
+                <div style={{ color: '#1a1410' }}>{a.action} <span style={{ color: 'oklch(0.5 0.02 60)' }}>· {a.target}</span></div>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase', color: 'oklch(0.5 0.02 60)' }}>{a.tone}</div>
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Pattern({ title, sub, tone }) {
+  return (
+    <div style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '1px solid oklch(0.96 0.01 60)' }}>
+      <div style={{ width: 4, alignSelf: 'stretch', background: tone, borderRadius: 2 }}/>
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 700 }}>{title}</div>
+        <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', marginTop: 2 }}>{sub}</div>
+      </div>
+    </div>
+  );
+}
+
+function HRPolicies() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: '#f5f1ea', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ padding: '20px 28px', borderBottom: '1px solid oklch(0.92 0.01 60)', background: 'white' }}>
+        <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.5 0.02 60)', textTransform: 'uppercase' }}>HR · Siyasətlər</div>
+        <div style={{ fontFamily: '"Fraunces", serif', fontSize: 28, lineHeight: 1.1, letterSpacing: -0.6, fontWeight: 500, marginTop: 4 }}>Sistem qaydaları · tək mənbə</div>
+      </div>
+      <div style={{ flex: 1, padding: 28, overflow: 'auto', display: 'grid', gridTemplateColumns: '1fr 360px', gap: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {[
+            { t: 'İş başlama saatı', v: '09:00', desc: 'Vaxtında sayılması üçün son hədd. 09:15-dən sonra "geç" markeri (cəza yox, sadəcə qeyd).', critical: true },
+            { t: 'Uzaqdan iş icazəsi', v: 'Manager + HR', desc: 'Hər iki tərəfə avtomatik bildiriş. Manager 30dəq cavab verməsə, HR yoxlayır.', critical: false },
+            { t: 'Aylıq uzaqdan limit', v: '8 gün/ay', desc: 'Daha çoxu üçün manager + HR birlikdə qərar. Komandanın özü razılaşa bilər.', critical: false },
+            { t: 'Kudos rotasiyası', v: 'İllik 1 dəfə', desc: 'Eyni nəfər il ərzində bir dəfə spotlight ala bilər — ədalətli paylanma.', critical: false },
+            { t: 'Streak qırılma siyasəti', v: 'Üzrlü = qorunur', desc: 'Xəstəlik / məzuniyyət streak-i qırmır. Heç bir cəza dinamikası.', critical: true },
+            { t: 'Görünürlük', v: 'Açıq · audit ilə', desc: 'Manager komandasını görür · HR hamını görür · əməkdaşlar bir-birinin statusunu (yer yox, niyə yox) görür.', critical: true },
+          ].map((p, i) => (
+            <div key={i} style={{ background: 'white', borderRadius: 12, padding: 16, border: '1px solid oklch(0.92 0.01 60)', display: 'grid', gridTemplateColumns: '1fr 140px 32px', gap: 16, alignItems: 'center' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700 }}>{p.t}</div>
+                  {p.critical && <span style={{ fontSize: 9, padding: '2px 6px', background: 'oklch(0.96 0.05 75)', color: 'oklch(0.55 0.15 75)', borderRadius: 4, fontWeight: 800, letterSpacing: 0.6 }}>KRİTİK</span>}
+                </div>
+                <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)', marginTop: 4, lineHeight: 1.5 }}>{p.desc}</div>
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1410', fontFamily: '"JetBrains Mono", monospace' }}>{p.v}</div>
+              <div style={{ fontSize: 18, color: 'oklch(0.5 0.02 60)' }}>›</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ background: 'oklch(0.20 0.02 35)', color: 'oklch(0.96 0.02 35)', borderRadius: 14, padding: 18 }}>
+            <div style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: 1.2, textTransform: 'uppercase', color: 'oklch(0.78 0.10 35)' }}>Sistem fəlsəfəsi</div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 22, lineHeight: 1.2, letterSpacing: -0.4, fontWeight: 500, marginTop: 8 }}>"Cəzalandırma deyil, fərqindəlik."</div>
+            <div style={{ fontSize: 12.5, opacity: 0.8, marginTop: 10, lineHeight: 1.5 }}>Bu sistem güvən üzərinə qurulub. Görünürlük insanlara öz ritmlərini görmək imkanı verir — özlərini özləri ilə müqayisə etsinlər.</div>
+          </div>
+          <div style={{ background: 'white', borderRadius: 14, padding: 16, border: '1px solid oklch(0.92 0.01 60)' }}>
+            <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Bu ay dəyişiklik</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10, fontSize: 12, lineHeight: 1.5 }}>
+              <div><b>22 Apr</b> · Aydan R. uzaqdan limiti 6 → 8 günə qaldırdı <span style={{ color: 'oklch(0.5 0.02 60)' }}>· komanda razılığı ilə</span></div>
+              <div><b>15 Apr</b> · Streak qırılma siyasəti yumşaldıldı <span style={{ color: 'oklch(0.5 0.02 60)' }}>· üzrlü qaib qorunur</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+window.HRCompanyDashboard = HRCompanyDashboard;
+window.HRPolicies = HRPolicies;
+
+  </script>
+
+  <!-- ===== flow7-checkout.jsx ===== -->
+  <script type="text/babel">
+// Flow 7 — Employee check-out (hybrid approach)
+// 4 screens: office auto-trigger · remote EOD prompt · forgot correction · day summary
+// Principle: "close the day" ritual, not time surveillance.
+
+function PhoneShell7({ children, time = '18:07', bg = '#f5f1ea' }) {
+  return (
+    <div style={{
+      width: 390, height: 844, background: bg,
+      fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
+      color: '#1a1410', overflow: 'hidden',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      <div style={{ height: 44, padding: '12px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, fontWeight: 700 }}>
+        <span>{time}</span>
+        <span style={{ display: 'flex', gap: 4, alignItems: 'center', fontSize: 11 }}>●●● 5G ▮▮▮▮</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function MiniStatCO({ label, value, tone }) {
+  return (
+    <div style={{ padding: '8px 10px', background: 'oklch(0.97 0.01 60)', borderRadius: 10 }}>
+      <div style={{ fontSize: 10, fontWeight: 800, color: tone, letterSpacing: 0.5, textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ fontSize: 14, fontWeight: 700, marginTop: 2 }}>{value}</div>
+    </div>
+  );
+}
+
+// Screen 1: Office — auto-detected departure (Wi-Fi left)
+function CheckoutAutoPrompt() {
+  return (
+    <PhoneShell7 time="18:07">
+      <div style={{ flex: 1, padding: '8px 22px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+        {/* Notification card — dark, prominent */}
+        <div style={{ background: '#1a1410', borderRadius: 18, padding: 18, color: 'white', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <window.Icon.Wifi s={15} c="oklch(0.62 0.13 155)"/>
+            <div style={{ fontSize: 11, fontWeight: 800, color: 'oklch(0.62 0.13 155)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Ofisdən ayrıldın</div>
+          </div>
+          <div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 28, lineHeight: 1.1, letterSpacing: -0.6, fontWeight: 500 }}>
+              18:07 — günü bağla?
+            </div>
+            <div style={{ fontSize: 13, color: 'oklch(0.78 0.04 35)', marginTop: 5, lineHeight: 1.5 }}>
+              Wi-Fi bağlantısı kəsildi · bu gün <b style={{ color: 'white' }}>8s 47dəq</b> işlədin
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button style={{ flex: 2, padding: '13px', background: 'oklch(0.62 0.13 155)', color: 'white', borderRadius: 10, fontSize: 14, fontWeight: 700, border: 'none' }}>Günü bağla</button>
+            <button style={{ flex: 1, padding: '13px', background: 'oklch(0.28 0.02 35)', color: 'oklch(0.78 0.04 35)', borderRadius: 10, fontSize: 13, fontWeight: 600, border: 'none' }}>Qayıdacam</button>
+          </div>
+        </div>
+
+        {/* Today mini stats */}
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 10 }}>Bu gün</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+            <MiniStatCO label="İş" value="8s 47" tone="oklch(0.50 0.12 240)"/>
+            <MiniStatCO label="Fokus" value="4s 10" tone="oklch(0.55 0.16 35)"/>
+            <MiniStatCO label="Görüş" value="2s 15" tone="oklch(0.50 0.14 320)"/>
+          </div>
+        </div>
+
+        {/* Streak nudge */}
+        <div style={{ background: 'oklch(0.96 0.04 35)', borderRadius: 12, padding: 12, border: '1px solid oklch(0.90 0.04 35)', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ fontSize: 20, color: 'oklch(0.65 0.18 35)' }}>◆</div>
+          <div style={{ fontSize: 12, lineHeight: 1.5, color: 'oklch(0.45 0.10 35)' }}>
+            <b>21 gün ritm</b> — bu gün də tamamlandı.<br/>9 gün sonra <b>30 gün davam</b> nişanı açılır.
+          </div>
+        </div>
+
+        <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', textAlign: 'center', lineHeight: 1.5 }}>
+          "Qayıdacam" seçsən, 2 saatdan sonra yenidən soruşacam.
+        </div>
+      </div>
+    </PhoneShell7>
+  );
+}
+
+// Screen 2: Remote — end-of-day prompt at ~18:00
+function CheckoutRemoteEOD() {
+  return (
+    <PhoneShell7 time="18:00">
+      <div style={{ flex: 1, padding: '8px 22px 28px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+        <div>
+          <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 1.4, color: 'oklch(0.55 0.16 35)', textTransform: 'uppercase' }}>Günü bağla</div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 28, lineHeight: 1.15, letterSpacing: -0.6, fontWeight: 500, marginTop: 4 }}>
+            Mələk, günün<br/>necə keçdi?
+          </div>
+        </div>
+
+        {/* Day summary card */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 16, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <window.StatusChip status="remote"/>
+            <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', fontFamily: '"JetBrains Mono", monospace' }}>09:20 → 18:00</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 12 }}>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 40, fontWeight: 600, letterSpacing: -1, color: '#1a1410' }}>8s 40dəq</div>
+            <div style={{ fontSize: 12, color: 'oklch(0.5 0.02 60)' }}>bu gün</div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+            <MiniStatCO label="Fokus" value="3s 20" tone="oklch(0.55 0.16 35)"/>
+            <MiniStatCO label="Görüş" value="2s 00" tone="oklch(0.50 0.14 320)"/>
+            <MiniStatCO label="Fasilə" value="55dəq" tone="oklch(0.45 0.02 60)"/>
+          </div>
+        </div>
+
+        {/* Mood check */}
+        <div style={{ background: 'oklch(0.96 0.03 35)', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.04 35)' }}>
+          <div style={{ fontSize: 12.5, fontWeight: 700, marginBottom: 3 }}>Bugün necə hiss etdin?</div>
+          <div style={{ fontSize: 11.5, color: 'oklch(0.5 0.02 60)', marginBottom: 12 }}>İxtiyari · yalnız sən görürsən · həftəlik xülasəyə gedir</div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {['🌫', '◐', '◑', '◉', '✦'].map((g, i) => (
+              <div key={i} style={{
+                flex: 1, padding: '10px 0', textAlign: 'center',
+                background: i === 3 ? '#1a1410' : 'white',
+                color: i === 3 ? 'white' : '#1a1410',
+                borderRadius: 10, fontSize: 18,
+                border: i === 3 ? 'none' : '1px solid oklch(0.92 0.01 60)',
+              }}>{g}</div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: 'oklch(0.5 0.02 60)', marginTop: 6, padding: '0 4px' }}>
+            <span>yorğun</span><span>odaqlı</span>
+          </div>
+        </div>
+
+        {/* Tomorrow intention */}
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>Sabah üçün 1 niyyət · ixtiyari</div>
+          <div style={{ fontSize: 13, color: 'oklch(0.5 0.02 60)', lineHeight: 1.5 }}>
+            Onboarding flow-unu bitir, review-a hazırla.
+          </div>
+        </div>
+
+        <button style={{ marginTop: 'auto', background: '#1a1410', color: 'white', padding: '14px 16px', borderRadius: 12, fontSize: 15, fontWeight: 700, border: 'none' }}>
+          Günü bağla · 18:00
+        </button>
+      </div>
+    </PhoneShell7>
+  );
+}
+
+// Screen 3: Forgot to check out — next morning correction prompt
+function CheckoutForgot() {
+  return (
+    <PhoneShell7 time="09:05">
+      <div style={{ flex: 1, padding: '8px 22px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+        {/* Gentle warning banner */}
+        <div style={{ background: 'oklch(0.96 0.05 75)', borderRadius: 14, padding: 14, border: '1px solid oklch(0.90 0.05 75)', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+          <window.Icon.Clock s={16} c="oklch(0.55 0.15 75)"/>
+          <div>
+            <div style={{ fontSize: 12.5, fontWeight: 700, color: 'oklch(0.50 0.12 75)' }}>Dünən tamamlanmayıb</div>
+            <div style={{ fontSize: 12, color: 'oklch(0.50 0.10 75)', marginTop: 3, lineHeight: 1.5 }}>Dünən çıxış qeydini etmədin. Düzəliş etmək üçün 1 dəqiqə.</div>
+          </div>
+        </div>
+
+        <div>
+          <div style={{ fontFamily: '"Fraunces", serif', fontSize: 26, lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 500 }}>
+            Dünən — 26 Aprel<br/>nə vaxt çıxdın?
+          </div>
+          <div style={{ fontSize: 13, color: 'oklch(0.45 0.02 60)', marginTop: 6 }}>Check-in saat 09:20-də idi.</div>
+        </div>
+
+        {/* Time chips */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 16, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 12 }}>Çıxış saatı</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {['16:00', '17:00', '18:00', '18:30', '19:00', '19:30', '20:00', 'Digər...'].map((t, i) => (
+              <div key={t} style={{
+                padding: '9px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                background: i === 3 ? '#1a1410' : 'oklch(0.96 0.01 60)',
+                color: i === 3 ? 'white' : '#1a1410',
+                border: i === 3 ? 'none' : '1px solid oklch(0.92 0.01 60)',
+              }}>{t}</div>
+            ))}
+          </div>
+          <div style={{ marginTop: 12, fontSize: 12, color: 'oklch(0.5 0.02 60)' }}>
+            Seçildi: <b style={{ color: '#1a1410', fontFamily: '"JetBrains Mono", monospace' }}>18:30</b> · 9s 10dəq
+          </div>
+        </div>
+
+        {/* Optional note */}
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>Qeyd · ixtiyari</div>
+          <div style={{ fontSize: 13, color: 'oklch(0.5 0.02 60)', lineHeight: 1.5 }}>Presentation bitirməyə çalışırdım, telefonuma baxmadım.</div>
+        </div>
+
+        <div style={{ background: 'oklch(0.96 0.03 240)', borderRadius: 10, padding: 12, border: '1px solid oklch(0.90 0.03 240)', fontSize: 11.5, color: 'oklch(0.40 0.10 240)', lineHeight: 1.5 }}>
+          <b>Şəffaflıq:</b> Düzəliş Rəşada kiçik qeyd kimi görünəcək — təsdiq tələb etmir.
+        </div>
+
+        <button style={{ marginTop: 'auto', background: '#1a1410', color: 'white', padding: '14px 16px', borderRadius: 12, fontSize: 15, fontWeight: 700, border: 'none' }}>Qeyd et · 18:30</button>
+      </div>
+    </PhoneShell7>
+  );
+}
+
+// Screen 4: Day successfully closed — summary + streak
+function CheckoutDaySummary() {
+  return (
+    <PhoneShell7 time="18:01">
+      <div style={{ flex: 1, padding: '8px 22px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+        {/* Hero — sage/success tone */}
+        <div style={{ background: 'oklch(0.94 0.04 155)', borderRadius: 20, padding: 22, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', right: -30, top: -30, width: 140, height: 140, borderRadius: '50%', background: 'oklch(0.85 0.08 155 / 0.4)' }}/>
+          <div style={{ position: 'relative' }}>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.4, color: 'oklch(0.40 0.12 155)', textTransform: 'uppercase' }}>Gün tamamlandı</div>
+            <div style={{ fontFamily: '"Fraunces", serif', fontSize: 32, lineHeight: 1.1, letterSpacing: -0.7, fontWeight: 500, color: '#0d1c14', marginTop: 6 }}>
+              Sabah görüşərik,<br/>Mələk.
+            </div>
+            <div style={{ fontSize: 13, color: 'oklch(0.38 0.10 155)', marginTop: 4 }}>18:00 · 8s 40dəq işlədin bu gün</div>
+          </div>
+        </div>
+
+        {/* Day timeline */}
+        <div style={{ background: 'white', borderRadius: 16, padding: 16, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 12 }}>Bu günün izi</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[
+              { time: '09:20', label: 'Uzaqdan başladı',        tone: 'oklch(0.50 0.12 240)' },
+              { time: '11:00', label: 'Dizayn sync · 30dəq',    tone: 'oklch(0.50 0.14 320)' },
+              { time: '13:30', label: 'Fokus bloku · 3s 20dəq', tone: 'oklch(0.55 0.16 35)' },
+              { time: '15:00', label: '1-on-1 Rəşadla · 45dəq', tone: 'oklch(0.50 0.14 320)' },
+              { time: '18:00', label: 'Gün bağlandı',            tone: 'oklch(0.50 0.10 155)', active: true },
+            ].map(r => (
+              <div key={r.time} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: r.active ? r.tone : 'transparent', border: r.active ? 'none' : `1.5px solid ${r.tone}`, flexShrink: 0 }}/>
+                <div style={{ fontSize: 11.5, color: 'oklch(0.45 0.02 60)', fontFamily: '"JetBrains Mono", monospace', width: 44, flexShrink: 0 }}>{r.time}</div>
+                <div style={{ fontSize: 13, color: '#1a1410', fontWeight: r.active ? 700 : 500 }}>{r.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Streak update */}
+        <div style={{ background: 'linear-gradient(135deg, oklch(0.96 0.05 35), oklch(0.94 0.06 50))', borderRadius: 16, padding: 14, border: '1px solid oklch(0.90 0.06 35)', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ fontSize: 28, color: 'oklch(0.65 0.18 35)' }}>◆</div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700 }}>21 gün ritm · bu gün tamamlandı</div>
+            <div style={{ fontSize: 11.5, color: 'oklch(0.50 0.10 35)', marginTop: 2 }}>9 gün sonra <b>30 gün davam</b> nişanı açılır</div>
+          </div>
+        </div>
+
+        {/* Tomorrow preview */}
+        <div style={{ background: 'white', borderRadius: 14, padding: 14, border: '1px solid oklch(0.92 0.01 60)' }}>
+          <div style={{ fontSize: 10.5, fontWeight: 800, color: 'oklch(0.5 0.02 60)', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 6 }}>Sabah sənə</div>
+          <div style={{ fontSize: 13, lineHeight: 1.5, color: '#1a1410' }}>
+            <b>2 görüş</b> · 10:00 sprint review · 15:00 dizayn crit
+          </div>
+        </div>
+      </div>
+    </PhoneShell7>
+  );
+}
+
+window.CheckoutAutoPrompt = CheckoutAutoPrompt;
+window.CheckoutRemoteEOD = CheckoutRemoteEOD;
+window.CheckoutForgot = CheckoutForgot;
+window.CheckoutDaySummary = CheckoutDaySummary;
+
+  </script>
+
+  <!-- ===== App entry point ===== -->
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard, DCPostIt } = window;
+
+    // Web/desktop frame — chrome-less, just a soft browser-window-like card
+    function WebFrame({ children, label = '', w = 1280, h = 800 }) {
+      return (
+        <div style={{ width: w, height: h, background: 'white', borderRadius: 14, overflow: 'hidden', boxShadow: '0 30px 80px -30px rgba(40,20,8,0.25), 0 0 0 1px oklch(0.90 0.01 60)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ height: 36, background: 'oklch(0.97 0.01 60)', borderBottom: '1px solid oklch(0.93 0.01 60)', display: 'flex', alignItems: 'center', padding: '0 14px', gap: 8, flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'oklch(0.78 0.14 25)' }}/>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'oklch(0.82 0.14 80)' }}/>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'oklch(0.78 0.14 145)' }}/>
+            </div>
+            <div style={{ marginLeft: 14, fontSize: 11.5, color: 'oklch(0.5 0.02 60)', fontFamily: '"JetBrains Mono", monospace' }}>app.codeacademy.az/{label}</div>
+          </div>
+          <div style={{ flex: 1, overflow: 'hidden' }}>{children}</div>
+        </div>
+      );
+    }
+
+    function App() {
+      return (
+        <DesignCanvas style={{ background: 'transparent' }}>
+
+          {/* ───────── 0. Manifesto / fəlsəfə ───────── */}
+          <DCSection id="manifesto" title="00 — Fəlsəfə + sistem prinsipi" subtitle="Hər şeydən əvvəl: niyə bu sistem?">
+            <DCArtboard id="m1" label="Manifesto · 'Cəzalandırma deyil, fərqindəlik'" width={1100} height={620}>
+              <ManifestoBoard/>
+            </DCArtboard>
+            <DCArtboard id="m2" label="Sistem xəritəsi · 3 rol · 1 mənbə" width={1200} height={680}>
+              <SystemMapBoard/>
+            </DCArtboard>
+            <DCArtboard id="m3" label="Vizual sistem · rəng · tipoqrafiya" width={1100} height={680}>
+              <ColorTypeBoard/>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 1. Əməkdaş — Check-in axını (mobil) ───────── */}
+          <DCSection id="flow-checkin" title="01 — Əməkdaş · check-in axını" subtitle="Səhər telefonu açır → 6 saniyəyə işdə. Wi-Fi/GPS şəffaf siqnaldır.">
+            <DCArtboard id="ci1" label="09:14 · Səhər · auto-detect" width={390} height={844}>
+              <EmployeeMorningGate/>
+            </DCArtboard>
+            <DCArtboard id="ci2" label="Manual seçim · ofis siyahısı" width={390} height={844}>
+              <EmployeeManualSelect/>
+            </DCArtboard>
+            <DCArtboard id="ci3" label="Uzaqdan · təsdiq ekranı" width={390} height={844}>
+              <EmployeeRemoteConfirm/>
+            </DCArtboard>
+            <DCArtboard id="ci4" label="Uğurlu giriş · gün başladı" width={390} height={844}>
+              <EmployeeCheckinSuccess/>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 1b. Əməkdaş — Check-out axını (hibrid) ───────── */}
+          <DCSection id="flow-checkout" title="01b — Əməkdaş · check-out axını (hibrid)" subtitle="Gün rituali — bağlama, yox saatı ölçmə. Ofis auto · uzaqdan bildiriş · unudan üçün düzəliş.">
+            <DCArtboard id="co1" label="18:07 · Ofis · Wi-Fi kəsildi" width={390} height={844}>
+              <CheckoutAutoPrompt/>
+            </DCArtboard>
+            <DCArtboard id="co2" label="18:00 · Uzaqdan · gün sonu bildirişi" width={390} height={844}>
+              <CheckoutRemoteEOD/>
+            </DCArtboard>
+            <DCArtboard id="co3" label="Sabah · 'dünən nə vaxt çıxdın?'" width={390} height={844}>
+              <CheckoutForgot/>
+            </DCArtboard>
+            <DCArtboard id="co4" label="Gün bağlandı · xülasə + streak" width={390} height={844}>
+              <CheckoutDaySummary/>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 2. Əməkdaş — Şəxsi dashboard + Weekly Wrap ───────── */}
+          <DCSection id="flow-personal" title="02 — Əməkdaş · şəxsi səhifə + həftəlik xülasə" subtitle="Özünə güzgü. Müqayisə özün-özünlədir, başqası ilə yox.">
+            <DCArtboard id="p1" label="Şəxsi dashboard" width={390} height={844}>
+              <EmployeePersonalDashboard/>
+            </DCArtboard>
+            <DCArtboard id="p2" label="Cümə · həftəlik xülasə" width={390} height={844}>
+              <EmployeeWeeklyWrap/>
+            </DCArtboard>
+            <DCArtboard id="p3" label="Mərhələlər · nailiyyət" width={390} height={844}>
+              <EmployeeBadges/>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 3. Əməkdaş — Sorğu axını ───────── */}
+          <DCSection id="flow-request" title="03 — Əməkdaş · sorğu göndərmə + cavab" subtitle="Tək kanal. CEO-ya birbaşa yazışma yox — sistem keçidi. Cavab əməkdaşa bildiriş kimi gəlir.">
+            <DCArtboard id="r1" label="Sorğu yazma · uzaqdan iş" width={390} height={844}>
+              <RequestForm/>
+            </DCArtboard>
+            <DCArtboard id="r2" label="Göndərildi · cavab gözlə" width={390} height={844}>
+              <RequestSent/>
+            </DCArtboard>
+            <DCArtboard id="r3" label="Cavab · sorğun təsdiqləndi ✓" width={390} height={844}>
+              <RequestApproved/>
+            </DCArtboard>
+            <DCArtboard id="r4" label="Cavab · bu dəfə olmadı · yenidən göndər" width={390} height={844}>
+              <RequestDeclined/>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 4. Manager — Komanda canlı + sorğu inbox ───────── */}
+          <DCSection id="flow-manager" title="04 — Manager · komanda canlı + inbox" subtitle="Gün necə gedir? Komandam haradadır? Hansı sorğular gözləyir?">
+            <DCArtboard id="mg1" label="Manager · komanda canlı statusu" width={1280} height={800}>
+              <WebFrame label="manager/team" w={1280} h={800}><ManagerTeamLive/></WebFrame>
+            </DCArtboard>
+            <DCArtboard id="mg2" label="Manager · sorğu inbox" width={1280} height={800}>
+              <WebFrame label="manager/inbox" w={1280} h={800}><ManagerRequestInbox/></WebFrame>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 5. Mükafat sistemi — kudos, milestone, spotlight ───────── */}
+          <DCSection id="flow-rewards" title="05 — Mükafat sistemi · kudos + spotlight" subtitle="Ardıcıllığa mükafat — 'ən erkən gələn'ə yox.">
+            <DCArtboard id="rw1" label="Kudos · komandadasına təşəkkür" width={390} height={844}>
+              <KudosCompose/>
+            </DCArtboard>
+            <DCArtboard id="rw2" label="Kudos · aldın! tam görünüş" width={390} height={844}>
+              <KudosReceived/>
+            </DCArtboard>
+            <DCArtboard id="rw3" label="Mərhələ açıldı · 30 gün ritm" width={390} height={844}>
+              <MilestoneUnlock/>
+            </DCArtboard>
+            <DCArtboard id="rw4" label="Mükafat götür · istifadə kodu" width={390} height={844}>
+              <RewardRedeem/>
+            </DCArtboard>
+            <DCArtboard id="rw5" label="Mükafat kataloqu · seçim" width={1100} height={680}>
+              <RewardsCatalog/>
+            </DCArtboard>
+            <DCArtboard id="rw6" label="Manager spotlight · aylıq seçim" width={1280} height={760}>
+              <WebFrame label="manager/spotlight" w={1280} h={760}><ManagerSpotlight/></WebFrame>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 6. HR — şirkət dashboard + siyasətlər ───────── */}
+          <DCSection id="flow-hr" title="06 — HR / Admin · şirkət canlı + siyasət" subtitle="Bütün şirkətin nəbzi. Audit log. Tək mənbə həqiqət.">
+            <DCArtboard id="hr1" label="HR · şirkət canlı + audit" width={1280} height={840}>
+              <WebFrame label="hr/dashboard" w={1280} h={840}><HRCompanyDashboard/></WebFrame>
+            </DCArtboard>
+            <DCArtboard id="hr2" label="HR · siyasətlər (tək mənbə)" width={1280} height={760}>
+              <WebFrame label="hr/policies" w={1280} h={760}><HRPolicies/></WebFrame>
+            </DCArtboard>
+          </DCSection>
+
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+
+</body>
+</html>
