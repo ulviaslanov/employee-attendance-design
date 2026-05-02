@@ -1,0 +1,142 @@
+{
+  "common": {
+    "save": "Yadda saxla",
+    "cancel": "Ləğv et",
+    "confirm": "Təsdiq et",
+    "back": "Geri",
+    "next": "İrəli",
+    "loading": "Yüklənir...",
+    "error": "Xəta baş verdi",
+    "retry": "Yenidən cəhd et",
+    "yes": "Bəli",
+    "no": "Xeyr",
+    "today": "Bu gün",
+    "yesterday": "Dünən"
+  },
+  "auth": {
+    "signInGoogle": "Google ilə daxil ol",
+    "signOut": "Çıxış",
+    "welcomeBack": "Xoş gəldin, {name}"
+  },
+  "checkin": {
+    "morningGreeting": "Sabahın xeyir, {name}",
+    "today": "{date}",
+    "detectedHere": "Sən buradasan: {location}",
+    "notHere": "Burada deyiləm",
+    "confirmHere": "Bəli, buradayam",
+    "manualSelect": "Yer seç",
+    "remoteFromHome": "Evdən işləyirəm",
+    "fromField": "Çöldəyəm",
+    "inMeeting": "Görüşdəyəm",
+    "sick": "Xəstələnmişəm",
+    "onLeave": "Məzuniyyətdəyəm",
+    "noteToManager": "Rəhbərə qeyd (istəyə bağlı)",
+    "submit": "Günü başla",
+    "successTitle": "Gün başladı",
+    "successSubtitle": "Ritmin: {streak} gün",
+    "moodTitle": "Bu gün özünü necə hiss edirsən?",
+    "moodPrivate": "Yalnız sən görürsən"
+  },
+  "checkout": {
+    "closeDay": "Günü bağla",
+    "summaryTitle": "Bu gün",
+    "focusHours": "Fokus saat",
+    "meetingHours": "Görüş saat",
+    "breakTime": "Fasilə"
+  },
+  "request": {
+    "newRequest": "Yeni sorğu",
+    "type": {
+      "remote": "Uzaqdan iş",
+      "leave": "Məzuniyyət",
+      "sick": "Xəstəlik",
+      "field": "Çöldə iş",
+      "short": "Qısa icazə"
+    },
+    "dateFrom": "Başlanğıc tarix",
+    "dateTo": "Son tarix",
+    "reason": "Səbəb (istəyə bağlı)",
+    "submit": "Sorğunu göndər",
+    "status": {
+      "pending": "Gözləyir",
+      "approved": "Təsdiqləndi",
+      "declined": "Rədd edildi",
+      "escalated": "HR-a ötürüldü",
+      "cancelled": "Ləğv edildi"
+    },
+    "visibility": "Bu sorğunu kim görür: rəhbərin {manager} və HR ({hr})",
+    "remainingThisMonth": "Bu ay qalan uzaqdan günlər: {count}",
+    "approve": "Təsdiq et",
+    "decline": "Rədd et",
+    "needMoreInfo": "Əlavə məlumat istə"
+  },
+  "personal": {
+    "tabToday": "Gün",
+    "tabMe": "Mən",
+    "tabRequests": "Sorğular",
+    "tabTeam": "Komanda",
+    "streakLabel": "Ritm",
+    "streakDays": "{count} gün",
+    "tier": {
+      "new": "Yeni",
+      "starting": "Başlanğıc",
+      "rhythm": "Ritm",
+      "sustained": "Davamlı",
+      "beacon": "Mayak"
+    },
+    "weeklyWrap": "Həftəlik xülasə",
+    "badges": "Nailiyyətlər"
+  },
+  "team": {
+    "live": "Komanda — indi",
+    "kpi": {
+      "office": "Ofisdə",
+      "remote": "Uzaqdan",
+      "meeting": "Görüşdə",
+      "field": "Çöldə",
+      "sick": "Xəstə",
+      "off": "Məzuniyyətdə",
+      "notyet": "Hələ yox",
+      "pending": "Gözləyən sorğu"
+    }
+  },
+  "kudos": {
+    "send": "Kudos göndər",
+    "to": "Kimə",
+    "valueTag": "Dəyər",
+    "tags": {
+      "komanda-dayagi": "Komanda dayağı",
+      "yaradicilik": "Yaradıcılıq",
+      "sahiblik": "Sahiblik",
+      "suret": "Sürət",
+      "sheffafliq": "Şəffaflıq",
+      "empatiya": "Empatiya"
+    },
+    "message": "Mesaj",
+    "submit": "Göndər",
+    "received": "Sənə gələn kudos"
+  },
+  "rewards": {
+    "catalog": "Mükafat kataloqu",
+    "claim": "Götür",
+    "use": "İstifadə et",
+    "status": {
+      "unlocked": "Açıldı",
+      "claimed": "Götürüldü",
+      "used": "İstifadə olundu",
+      "expired": "Vaxtı keçdi"
+    }
+  },
+  "spotlight": {
+    "monthly": "Ay ulduzu",
+    "selectWinner": "Qalibi seç",
+    "candidates": "Sistemin təklif etdikləri",
+    "rotationNote": "Bu il artıq seçilib",
+    "announce": "Elan et"
+  },
+  "hr": {
+    "company": "Şirkət — indi",
+    "policies": "Siyasətlər",
+    "auditLog": "Audit jurnalı"
+  }
+}
