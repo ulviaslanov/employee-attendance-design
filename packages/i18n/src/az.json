@@ -98,7 +98,9 @@
       "off": "Məzuniyyətdə",
       "notyet": "Hələ yox",
       "pending": "Gözləyən sorğu"
-    }
+    },
+    "liveIndicator": "Canlı",
+    "todayEvents": "Bu gün"
   },
   "kudos": {
     "send": "Kudos göndər",
@@ -138,5 +140,18 @@
     "company": "Şirkət — indi",
     "policies": "Siyasətlər",
     "auditLog": "Audit jurnalı"
+  },
+  "app": {
+    "title": "Komanda — indi",
+    "teamPanel": "Komanda paneli",
+    "backendOauthPending": "Backend OAuth hələ konfiqurasiya olunur."
+  },
+  "time": {
+    "now": "indicə",
+    "minutesAgo": "{count} dəq əvvəl",
+    "hoursAgo": "{count} saat əvvəl",
+    "ago": "əvvəl",
+    "minute": "dəq",
+    "hour": "saat"
   }
 }

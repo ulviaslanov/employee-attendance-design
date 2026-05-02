@@ -26,7 +26,7 @@ export default async function TeamPage() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-(--color-sage) opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-(--color-sage)" />
           </span>
-          Canlı
+          {t('az', 'team.liveIndicator')}
         </span>
       </header>
 

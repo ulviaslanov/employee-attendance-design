@@ -2,11 +2,12 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { t } from '@attendance/i18n'
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: 'Komanda — indi',
+  title: t('az', 'app.title'),
   description: 'Code Academy attendance — manager view',
 }
 

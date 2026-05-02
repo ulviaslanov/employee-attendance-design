@@ -29,10 +29,10 @@ function initials(name: string): string {
 function relativeTime(iso: string | null): string {
   if (!iso) return '—'
   const diffMin = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60_000))
-  if (diffMin < 1) return 'indicə'
-  if (diffMin < 60) return `${diffMin} dəq əvvəl`
+  if (diffMin < 1) return t('az', 'time.now')
+  if (diffMin < 60) return t('az', 'time.minutesAgo', { count: diffMin })
   const h = Math.floor(diffMin / 60)
-  return `${h} saat əvvəl`
+  return t('az', 'time.hoursAgo', { count: h })
 }
 
 export function TeamLive({ initial }: { initial: TeamLiveSnapshot }) {
