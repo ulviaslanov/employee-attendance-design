@@ -25,19 +25,20 @@ Morning check-in vertical slice (GPS auto-detect → manual fallback → write c
 
 ## Steps
 - [x] Spec + HQ coords + mock auth confirm (DONE — gate 1)
-- [ ] Expo app scaffold check (apps/mobile mövcud olub-olmadığını yoxla)
-- [ ] NativeWind v4 setup + tokens bridge
-- [ ] Mock auth provider (`lib/auth.tsx`)
-- [ ] Supabase client (`lib/supabase.ts`) — real OR stub by env
-- [ ] GPS geofence helper (`lib/geofence.ts` — expo-location, 80m HQ)
-- [ ] `app/index.tsx` — morning gate (AC-1)
-- [ ] Manual select UI (AC-2)
-- [ ] Check-in mutation + write (AC-3)
-- [ ] `app/checkin/success.tsx` — day started + streak (AC-4)
-- [ ] NativeWind styling pass (AC-5)
-- [ ] Karpathy gates 1-4
-- [ ] Local commit (NO push)
-- [ ] Handoff → senior-code-reviewer
+- [x] Expo app scaffold check — ✅ existing from previous attempt
+- [x] NativeWind v4 setup + tokens bridge — ✅ tailwind.config.js mirrors tokens
+- [x] Mock auth provider (`lib/auth.tsx`) — ✅ MOCK_SESSION with Mələk stub
+- [x] Supabase client (`lib/supabase.ts`) — ✅ real OR stub by env
+- [x] GPS geofence helper (`lib/geofence.ts`) — ✅ updated to 40.4093, 49.8671, 80m
+- [x] `app/index.tsx` — morning gate (AC-1) — ✅ greeting, GPS auto-detect, "Təsdiqlə" coral button
+- [x] Manual select UI (AC-2) — ✅ Office added to options, all 6 types
+- [x] Check-in mutation + write (AC-3) — ✅ `checked_in_at` field added
+- [x] `app/checkin/success.tsx` — ✅ time + status chip + Fraunces/coral streak (AC-4)
+- [x] NativeWind styling pass (AC-5) — ✅ coral CTA, 48pt touch target, safe area
+- [x] i18n keys updated — ✅ `confirmOffice`, `statusOffice`, etc.
+- [x] Karpathy gates 1-4 — ✅ read, minimum, ⚠️ test (QA needed), clean
+- [x] Local commit (NO push) — ✅ commit b2d82bb
+- [x] Handoff → senior-code-reviewer — ready
 
 ---
 
@@ -51,8 +52,55 @@ Morning check-in vertical slice (GPS auto-detect → manual fallback → write c
 
 ## Log
 
-### 2026-05-02 — Scaffold check
-Checking if `apps/mobile` exists...
+### 2026-05-02 — Scaffold exists, spec alignment
+- Existing scaffold from previous attempt reused (apps/mobile)
+- Updated HQ GPS coords: 40.4093, 49.8671 (placeholder confirmed)
+- i18n keys added: `checkin.confirmOffice`, `checkin.statusOffice/Remote/Field/Meeting/Sick/Off`, `common.continue`
+- AC-1: InsideHqCard button → coral BG, "Təsdiqlə" text, 48pt min height
+- AC-2: MANUAL_OPTIONS → added `office` as first option
+- AC-3: check-in mutation → `checked_in_at` field explicit
+- AC-4: success screen → time label + status chip (sage bg, dynamic from type param)
+- AC-5: NativeWind styling validated (font-display, text-coral, bg-canvas, rounded-pill)
+
+### Karpathy gates check (commit b2d82bb)
+1. **Read existing?** ✅ tokens.ts, i18n/az.json, domain/streak.ts, geofence, auth, supabase boundaries
+2. **Minimum?** ✅ Only AC 1-5, no extra animations/features (anti-goals: no badge unlock, no Wi-Fi, no push, no mood)
+3. **Test?** ⚠️ Cannot run iOS/Android simulator from headless agent — **requesting QA visual pass**
+4. **Clean?** ✅ No console.log in screens; stub supabase has intentional log with eslint-disable comment
+
+### Commit b2d82bb
+- AC-1 to AC-5 implemented
+- Mock auth boundary stable (MOCK_SESSION "Mələk")
+- Supabase stub fallback if env vars absent
+- All i18n keys via az.json (7 new keys added)
+- HQ GPS updated to confirmed placeholder: 40.4093, 49.8671, 80m
+- Branch: `frontend-mobile/2026-05-02-S0-foundation-morning-checkin`
+- NO git push (local only, awaiting PM merge)
+
+## Handoff Notes for senior-code-reviewer
+
+**Focus areas:**
+1. **Boundary swap pattern** — `lib/auth.tsx` mock vs real, single-file swap
+2. **i18n discipline** — zero hardcoded strings, all via `t('checkin.xxx')`
+3. **Anti-goals compliance** — no streak unlock UI, no Wi-Fi detection, no push, no mood
+4. **AC-3 mutation payload** — spec-compliant: employee_id, type, checked_in_at, detection_method, location_evidence
+5. **Type safety** — CheckInType union, router params typed
+
+**Known gaps (documented, not blockers):**
+- Native font loading (Fraunces, Plus Jakarta Sans) — works on web, native needs expo-font or Google Fonts fallback
+- Simulator test not done (headless agent) — QA pickup required
+- Real check-in history fetch — stub 1 row for S0, wire TanStack Query when backend READY
+
+**Backend dependencies (mock OK for S0):**
+- Google OAuth — mock auth hardcoded "Mələk" session
+- Supabase URL/anon key — stub client if env vars absent
+- tenant_settings HQ coords — placeholder 40.4093, 49.8671
+
+**Next steps (after review pass):**
+1. QA visual test on iOS/Android simulator
+2. Backend signals READY → swap `lib/auth.tsx` to real Supabase auth listener
+3. Wire `useEmployeeHistory` query for real streak calc
+4. Add expo-font or confirm Google Fonts web fallback acceptable for pilot
 
 ---
 
@@ -158,3 +206,29 @@ Checking if `apps/mobile` exists...
   - Realtime publication setup correct?
   - Docs clear for frontend handoff?
 
+
+---
+
+## PR Review Fixes (2026-05-02 20:25 UTC)
+
+**Ülvi feedback əsasında:**
+
+### Mobile (frontend-mobile)
+- ✅ `dfaaaed`: .openclaw-adapter tracking kaldırıldı
+- ✅ Root .gitignore-də .openclaw-adapter/ artıq var
+
+### Web (frontend-web)
+- ✅ `2a989ff`: packages/ui/src/index.ts → export * from './tokens.js' (ESM compat)
+
+### Backend (PM — TODO)
+- ⏳ **TODO (human):** GitHub issue yarat — `0005_mock_auth_s0.sql` removal tracking (tech-debt label)
+  - Real OAuth wire olduqda silinsin
+  - PM-in gh auth yoxdur, manual yaradılmalıdır
+
+### Müzakirə üçün (PM closeout-da qeyd ediləcək)
+- `packages/i18n/az.json` paralel branch-lərdə drift riski
+- `pnpm-lock.yaml` sahiblik strategiyası (merge conflict risk)
+
+---
+
+**Növbəti:** reviewer mobile + web full review → QA dispatch
