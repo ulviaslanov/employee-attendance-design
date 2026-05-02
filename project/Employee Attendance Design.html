@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Employee Attendance & Performance — Dizayn axtarışı</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    html, body { margin: 0; padding: 0; background: #ebe5d8; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    *, *::before, *::after { box-sizing: border-box; }
+    /* Subtle paper texture for canvas */
+    body { background-image:
+      radial-gradient(circle at 20% 30%, oklch(0.96 0.02 60 / 0.4) 0px, transparent 60%),
+      radial-gradient(circle at 80% 70%, oklch(0.94 0.03 35 / 0.3) 0px, transparent 60%);
+    }
+  </style>
+
+  <template id="__bundler_thumbnail" data-bg-color="#ebe5d8">
+    <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1200" height="800" fill="#ebe5d8"/>
+      <g transform="translate(600 400)">
+        <circle r="180" fill="none" stroke="oklch(0.65 0.18 35)" stroke-width="14"/>
+        <path d="M -70 0 L -10 60 L 90 -60" fill="none" stroke="oklch(0.65 0.18 35)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <text x="600" y="660" font-family="Fraunces, serif" font-size="44" font-style="italic" fill="oklch(0.40 0.14 35)" text-anchor="middle">fərqindəlik</text>
+    </svg>
+  </template>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Order matters: tokens + data first, then design canvas, then flows, then app -->
+  <script type="text/babel" src="tokens.jsx"></script>
+  <script type="text/babel" src="data.jsx"></script>
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="flow0-manifesto.jsx"></script>
+  <script type="text/babel" src="flow1-checkin.jsx"></script>
+  <script type="text/babel" src="flow2-personal.jsx"></script>
+  <script type="text/babel" src="flow3-request.jsx"></script>
+  <script type="text/babel" src="flow4-manager.jsx"></script>
+  <script type="text/babel" src="flow5-rewards.jsx"></script>
+  <script type="text/babel" src="flow6-hr.jsx"></script>
+
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard, DCPostIt } = window;
+
+    // Web/desktop frame — chrome-less, just a soft browser-window-like card
+    function WebFrame({ children, label = '', w = 1280, h = 800 }) {
+      return (
+        <div style={{ width: w, height: h, background: 'white', borderRadius: 14, overflow: 'hidden', boxShadow: '0 30px 80px -30px rgba(40,20,8,0.25), 0 0 0 1px oklch(0.90 0.01 60)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ height: 36, background: 'oklch(0.97 0.01 60)', borderBottom: '1px solid oklch(0.93 0.01 60)', display: 'flex', alignItems: 'center', padding: '0 14px', gap: 8, flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'oklch(0.78 0.14 25)' }}/>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'oklch(0.82 0.14 80)' }}/>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'oklch(0.78 0.14 145)' }}/>
+            </div>
+            <div style={{ marginLeft: 14, fontSize: 11.5, color: 'oklch(0.5 0.02 60)', fontFamily: '"JetBrains Mono", monospace' }}>app.codeacademy.az/{label}</div>
+          </div>
+          <div style={{ flex: 1, overflow: 'hidden' }}>{children}</div>
+        </div>
+      );
+    }
+
+    function App() {
+      return (
+        <DesignCanvas style={{ background: 'transparent' }}>
+
+          {/* ───────── 0. Manifesto / fəlsəfə ───────── */}
+          <DCSection id="manifesto" title="00 — Fəlsəfə + sistem prinsipi" subtitle="Hər şeydən əvvəl: niyə bu sistem?">
+            <DCArtboard id="m1" label="Manifesto · 'Cəzalandırma deyil, fərqindəlik'" width={1100} height={620}>
+              <ManifestoBoard/>
+            </DCArtboard>
+            <DCArtboard id="m2" label="Sistem xəritəsi · 3 rol · 1 mənbə" width={1200} height={680}>
+              <SystemMapBoard/>
+            </DCArtboard>
+            <DCArtboard id="m3" label="Vizual sistem · rəng · tipoqrafiya" width={1100} height={680}>
+              <ColorTypeBoard/>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 1. Əməkdaş — Check-in axını (mobil) ───────── */}
+          <DCSection id="flow-checkin" title="01 — Əməkdaş · check-in axını" subtitle="Səhər telefonu açır → 6 saniyəyə işdə. Wi-Fi/GPS şəffaf siqnaldır.">
+            <DCArtboard id="ci1" label="09:14 · Səhər · auto-detect" width={390} height={844}>
+              <EmployeeMorningGate/>
+            </DCArtboard>
+            <DCArtboard id="ci2" label="Manual seçim · ofis siyahısı" width={390} height={844}>
+              <EmployeeManualSelect/>
+            </DCArtboard>
+            <DCArtboard id="ci3" label="Uzaqdan · təsdiq ekranı" width={390} height={844}>
+              <EmployeeRemoteConfirm/>
+            </DCArtboard>
+            <DCArtboard id="ci4" label="Uğurlu giriş · gün başladı" width={390} height={844}>
+              <EmployeeCheckinSuccess/>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 2. Əməkdaş — Şəxsi dashboard + Weekly Wrap ───────── */}
+          <DCSection id="flow-personal" title="02 — Əməkdaş · şəxsi səhifə + həftəlik xülasə" subtitle="Özünə güzgü. Müqayisə özün-özünlədir, başqası ilə yox.">
+            <DCArtboard id="p1" label="Şəxsi dashboard" width={390} height={844}>
+              <EmployeePersonalDashboard/>
+            </DCArtboard>
+            <DCArtboard id="p2" label="Cümə · həftəlik xülasə" width={390} height={844}>
+              <EmployeeWeeklyWrap/>
+            </DCArtboard>
+            <DCArtboard id="p3" label="Mərhələlər · nailiyyət" width={390} height={844}>
+              <EmployeeBadges/>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 3. Əməkdaş — Sorğu axını ───────── */}
+          <DCSection id="flow-request" title="03 — Əməkdaş · sorğu göndərmə" subtitle="Tək kanal. CEO-ya birbaşa yazışma yox — sistem keçidi.">
+            <DCArtboard id="r1" label="Sorğu yazma · uzaqdan iş" width={390} height={844}>
+              <RequestForm/>
+            </DCArtboard>
+            <DCArtboard id="r2" label="Göndərildi · cavab gözlə" width={390} height={844}>
+              <RequestSent/>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 4. Manager — Komanda canlı + sorğu inbox ───────── */}
+          <DCSection id="flow-manager" title="04 — Manager · komanda canlı + inbox" subtitle="Gün necə gedir? Komandam haradadır? Hansı sorğular gözləyir?">
+            <DCArtboard id="mg1" label="Manager · komanda canlı statusu" width={1280} height={800}>
+              <WebFrame label="manager/team" w={1280} h={800}><ManagerTeamLive/></WebFrame>
+            </DCArtboard>
+            <DCArtboard id="mg2" label="Manager · sorğu inbox" width={1280} height={800}>
+              <WebFrame label="manager/inbox" w={1280} h={800}><ManagerRequestInbox/></WebFrame>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 5. Mükafat sistemi — kudos, milestone, spotlight ───────── */}
+          <DCSection id="flow-rewards" title="05 — Mükafat sistemi · kudos + spotlight" subtitle="Ardıcıllığa mükafat — 'ən erkən gələn'ə yox.">
+            <DCArtboard id="rw1" label="Kudos · komandadasına təşəkkür" width={390} height={844}>
+              <KudosCompose/>
+            </DCArtboard>
+            <DCArtboard id="rw2" label="Mərhələ açıldı · 30 gün ritm" width={390} height={844}>
+              <MilestoneUnlock/>
+            </DCArtboard>
+            <DCArtboard id="rw3" label="Mükafat kataloqu · seçim" width={1100} height={680}>
+              <RewardsCatalog/>
+            </DCArtboard>
+            <DCArtboard id="rw4" label="Manager spotlight · aylıq seçim" width={1280} height={760}>
+              <WebFrame label="manager/spotlight" w={1280} h={760}><ManagerSpotlight/></WebFrame>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ───────── 6. HR — şirkət dashboard + siyasətlər ───────── */}
+          <DCSection id="flow-hr" title="06 — HR / Admin · şirkət canlı + siyasət" subtitle="Bütün şirkətin nəbzi. Audit log. Tək mənbə həqiqət.">
+            <DCArtboard id="hr1" label="HR · şirkət canlı + audit" width={1280} height={840}>
+              <WebFrame label="hr/dashboard" w={1280} h={840}><HRCompanyDashboard/></WebFrame>
+            </DCArtboard>
+            <DCArtboard id="hr2" label="HR · siyasətlər (tək mənbə)" width={1280} height={760}>
+              <WebFrame label="hr/policies" w={1280} h={760}><HRPolicies/></WebFrame>
+            </DCArtboard>
+          </DCSection>
+
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>
