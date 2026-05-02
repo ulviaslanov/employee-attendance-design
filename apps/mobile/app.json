@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "Attendance",
+    "slug": "attendance",
+    "scheme": "attendance",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "az.codeacademy.attendance",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Mərkəzi ofisdə olduğunu avtomatik təyin etmək üçün."
+      }
+    },
+    "android": {
+      "package": "az.codeacademy.attendance",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Mərkəzi ofisdə olduğunu avtomatik təyin etmək üçün."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
