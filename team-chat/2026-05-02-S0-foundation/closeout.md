@@ -251,3 +251,77 @@ None.
 
 **Recommendation:** Proceed with human QA → dogfood → merge. Sprint 1 should address tech debt #1-4 + infrastructure hardening.
 
+
+---
+
+## Merge Strategy (Updated from QA)
+
+### Recommended Order
+
+**Issue discovered:** pnpm-lock.yaml drift
+- ✅ Web branch: has pnpm-lock.yaml (9c7a183)
+- ❌ Mobile branch: no pnpm-lock.yaml (dependencies not committed)
+- ❌ Backend branch: no pnpm-lock.yaml (no dependencies added)
+
+**Risk:** Mobile + backend merges will regenerate lockfile → potential conflict.
+
+**Merge order (revised):**
+
+1. **Web → main** (first)
+   - Has lockfile already
+   - Establishes baseline pnpm-lock.yaml on main
+   - `git checkout main && git merge --no-ff frontend-web/2026-05-02-S0-foundation-team-live`
+
+2. **Mobile → main** (second)
+   - Rebase main: `git checkout frontend-mobile/... && git rebase main`
+   - Run `pnpm install` → regenerate lockfile with web deps
+   - Commit lockfile: `git add pnpm-lock.yaml && git commit -m "chore: update lockfile after main merge"`
+   - Merge: `git checkout main && git merge --no-ff frontend-mobile/...`
+
+3. **Backend → main** (third)
+   - Rebase main: `git checkout backend/... && git rebase main`
+   - Lockfile likely unchanged (backend has no deps)
+   - Merge: `git checkout main && git merge --no-ff backend/...`
+
+**Validation after each merge:**
+```bash
+pnpm install    # verify lockfile integrity
+pnpm typecheck  # verify no breakage
+pnpm test       # verify domain logic still passes
+```
+
+---
+
+## DoD Actual Status (After QA)
+
+[docs/conventions/definition-of-done.md](../../docs/conventions/definition-of-done.md)
+
+- ✅ Code review PASS (backend + mobile + web)
+- ✅ Typecheck PASS (all packages)
+- ✅ Domain tests PASS (32/32)
+- ✅ Web build PASS (Next.js + .js trade-off validated)
+- ⏳ pgTAP RLS tests (deferred — Docker required)
+- ⏳ Mobile simulator test (deferred — devices required)
+- ⏳ Web browser test (deferred — X11 required)
+- ⏳ Dogfood session (Ülvi + 1 employee + 1 manager — post-merge)
+
+**DoD status:** 4/8 complete, 4 deferred to dogfood phase.
+
+**Acceptance:** Structural DoD complete ✅. Runtime DoD deferred to dogfood ⏳.
+
+---
+
+## Updated Recommendation
+
+**Current state:** S0 structurally complete and ready for merge.
+
+**Next steps:**
+
+1. **Merge (in order):** web → mobile → backend
+2. **Validate after each:** `pnpm install && pnpm typecheck && pnpm test`
+3. **Tag:** `git tag v0.1.0-s0` after all 3 merged
+4. **Dogfood session:** Ülvi + team with Docker + devices (Faza A)
+5. **CI setup:** GitHub Actions with Docker for pgTAP + Playwright (Sprint 1)
+
+**Pilot readiness:** ✅ Code ready for merge, ⏳ runtime dogfood post-merge.
+
