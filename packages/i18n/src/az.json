@@ -12,7 +12,8 @@
     "yes": "Bəli",
     "no": "Xeyr",
     "today": "Bu gün",
-    "yesterday": "Dünən"
+    "yesterday": "Dünən",
+    "locationHq": "Mərkəzi ofis"
   },
   "auth": {
     "signInGoogle": "Google ilə daxil ol",

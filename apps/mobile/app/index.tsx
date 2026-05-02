@@ -121,8 +121,7 @@ function InsideHqCard({
   return (
     <View className="bg-white rounded-xl p-lg gap-md">
       <Text className="text-dusk text-xs uppercase tracking-wider font-bold">
-        {/* "Avtomatik aşkarlandı" — keep label simple, derived from copy in JSX prototype */}
-        {t('checkin.detectedHere', { location: 'Mərkəzi ofis' })}
+        {t('checkin.detectedHere', { location: t('common.locationHq') })}
       </Text>
       <Pressable
         accessibilityRole="button"
@@ -203,15 +202,11 @@ function ManualSelectCard({
   )
 }
 
-const WEEKDAYS_AZ = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə']
-const MONTHS_AZ = [
-  'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun',
-  'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr',
-]
-
 function formatTodayAz(date: Date = new Date()): string {
-  const wd = WEEKDAYS_AZ[date.getDay()]
-  const day = date.getDate()
-  const month = MONTHS_AZ[date.getMonth()]
-  return `${wd} · ${day} ${month}`
+  const formatter = new Intl.DateTimeFormat('az-AZ', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  })
+  return formatter.format(date).replace(',', ' ·')
 }
