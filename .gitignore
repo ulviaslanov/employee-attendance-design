@@ -54,3 +54,4 @@ android/.gradle/
 
 # Sentry
 .sentryclirc
+.openclaw-adapter/
