@@ -3,6 +3,7 @@
     "save": "Yadda saxla",
     "cancel": "Ləğv et",
     "confirm": "Təsdiq et",
+    "continue": "Davam et",
     "back": "Geri",
     "next": "İrəli",
     "loading": "Yüklənir...",
@@ -11,7 +12,8 @@
     "yes": "Bəli",
     "no": "Xeyr",
     "today": "Bu gün",
-    "yesterday": "Dünən"
+    "yesterday": "Dünən",
+    "locationHq": "Mərkəzi ofis"
   },
   "auth": {
     "signInGoogle": "Google ilə daxil ol",
@@ -24,7 +26,14 @@
     "detectedHere": "Sən buradasan: {location}",
     "notHere": "Burada deyiləm",
     "confirmHere": "Bəli, buradayam",
+    "confirmOffice": "Təsdiqlə",
     "manualSelect": "Yer seç",
+    "statusOffice": "Ofisdə",
+    "statusRemote": "Uzaqdan",
+    "statusField": "Çöldə",
+    "statusMeeting": "Görüşdə",
+    "statusSick": "Xəstəlik",
+    "statusOff": "Məzuniyyət",
     "remoteFromHome": "Evdən işləyirəm",
     "fromField": "Çöldəyəm",
     "inMeeting": "Görüşdəyəm",
